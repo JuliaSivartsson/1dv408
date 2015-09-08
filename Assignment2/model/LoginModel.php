@@ -12,7 +12,7 @@ class LoginModel{
     public function authenticate($username, $password){
         if($username == $this->correctUsername && $password == $this->correctPassword){
             $_SESSION[self::$setSession] = $username;
-            return 'Hello! :)';
+            return true;
         }
     }
 

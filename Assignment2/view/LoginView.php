@@ -36,7 +36,7 @@ class LoginView {
         else{
             $response = $this->generateLoginFormHTML($message);
         }
-        
+
 		return $response;
 	}
 	/**
@@ -66,7 +66,7 @@ class LoginView {
 					<p id="' . self::$messageId . '">' . $message . '</p>
 					
 					<label for="' . self::$name . '">Username :</label>
-					<input type="text" id="' . self::$name . '" name="' . self::$name . '" value="" />
+					<input type="text" id="' . self::$name . '" name="' . self::$name . '" value="' . $this->getRequestUserName()  .'" />
 					<label for="' . self::$password . '">Password :</label>
 					<input type="password" id="' . self::$password . '" name="' . self::$password . '" />
 					<label for="' . self::$keep . '">Keep me logged in  :</label>
@@ -92,6 +92,16 @@ class LoginView {
 			return $_POST[self::$password];
 		}
 		return null;
+	}
+
+	//If username is mimssing
+	public function usernameMissing(){
+		return empty($_POST[self::$name]);
+	}
+
+	//If password is missing
+	public function passwordMissing(){
+		return empty($_POST[self::$password]);
 	}
 
 	//If user presses login-button

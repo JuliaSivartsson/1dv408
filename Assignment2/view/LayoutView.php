@@ -52,7 +52,7 @@ class LayoutView
 
     date_default_timezone_set('Europe/Stockholm');
 
-    $timeString = '<p>' . date("l,") . ' the ' . date("jS") . ' of ' . date("F Y,") . ' The time is' . date(" g:i:s") . '</p>';
+    $timeString = '<p>' . date("l,") . ' the ' . date("jS") . ' of ' . date("F Y,") . ' The time is' . date(" H:i:s") . '</p>';
 
     return $timeString;
   }

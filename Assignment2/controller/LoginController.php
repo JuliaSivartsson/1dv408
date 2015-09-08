@@ -1,8 +1,6 @@
 <?php
-namespace controller;
 
-use view\DateTimeView;
-use view\LayoutView;
+namespace controller;
 
 class LoginController{
 
@@ -47,7 +45,7 @@ class LoginController{
             $isLoggedIn = false;
         }
 
-        $layoutView = new LayoutView();
+        $layoutView = new \view\LayoutView();
 
         $layoutView->getHTML($isLoggedIn, $this->loginView);
     }
@@ -57,13 +55,25 @@ class LoginController{
         return $this->loginModel->isSessionSet();
     }
 
-    public function logInAttempt(){
-
-    }
-
+    //
     public function doLogin($username, $password){
-        $result = $this->loginModel->authenticate($username, $password);
-        $this->loginView->setMessage($result);
+
+        //if username is empty
+        if($this->loginView->usernameMissing()){
+            $this->loginView->setMessage(\common\Messages::$usernameEmpty);
+            return;
+        }
+        else if($this->loginView->passwordMissing()){
+            $this->loginView->setMessage(\common\Messages::$passwordEmpty);
+            return;
+        }
+
+        if($this->loginModel->authenticate($username, $password) == TRUE){
+            $this->loginView->setMessage(\common\Messages::$login);
+        }
+        else{
+            $this->loginView->setMessage(\common\Messages::$wrongCredentials);
+        }
     }
 
     public function doLogout(){
