@@ -3,8 +3,8 @@
 namespace common;
 
 class Messages{
-    //Messages to show to user in different situations
 
+    //Messages to show to user in different situations
     public static $login = "Welcome";
     public static $logout = "Bye bye!";
     public static $usernameEmpty = "Username is missing";

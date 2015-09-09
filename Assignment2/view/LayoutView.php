@@ -40,16 +40,9 @@ class LayoutView
     }
   }
 
-
-
-
-  public function userIsLoggedIn() {
-    return isset($_GET[self::$colorInput]);
-  }
-
+  //Show date and time
   public function showDateTime()
   {
-
     date_default_timezone_set('Europe/Stockholm');
 
     $timeString = '<p>' . date("l,") . ' the ' . date("jS") . ' of ' . date("F Y,") . ' The time is' . date(" H:i:s") . '</p>';

@@ -15,7 +15,6 @@ class LoginView {
 	private $model;
 	private $message;
 
-
 	public function __construct(\model\LoginModel $loginModel){
 		$this->model = $loginModel;
 	}
@@ -39,11 +38,8 @@ class LoginView {
 
 		return $response;
 	}
-	/**
-	 * Generate HTML code on the output buffer for the logout button
-	 * @param $message, String output message
-	 * @return  void, BUT writes to standard output!
-	 */
+
+    //Generate logout button
 	private function generateLogoutButtonHTML($message) {
 		return '
 			<form  method="post" >
@@ -53,11 +49,7 @@ class LoginView {
 		';
 	}
 
-	/**
-	 * Generate HTML code on the output buffer for the logout button
-	 * @param $message, String output message
-	 * @return  void, BUT writes to standard output!
-	 */
+	//Generate login form
 	private function generateLoginFormHTML($message) {
 		return '
 			<form method="post" > 
@@ -94,7 +86,7 @@ class LoginView {
 		return null;
 	}
 
-	//If username is mimssing
+	//If username is missing
 	public function usernameMissing(){
 		return empty($_POST[self::$name]);
 	}
@@ -114,6 +106,12 @@ class LoginView {
 		return isset($_POST[self::$logout]);
 	}
 
+	//If user wants to be remembered
+	public function userWantsToBeRemembered(){
+		return isset($_POST[self::$keep]);
+	}
+
+    //Set message to show user
 	public function setMessage($message){
 		return $this->message = $message;
 	}
