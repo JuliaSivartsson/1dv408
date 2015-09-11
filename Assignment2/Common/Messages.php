@@ -10,6 +10,7 @@ class Messages{
     public static $usernameEmpty = "Username is missing";
     public static $passwordEmpty = "Password is missing";
     public static $wrongCredentials = "Wrong name or password";
-
+    public static $keepUserSignedIn = "Welcome and you will be remembered";
+    public static $userReturning = "Welcome back with cookie";
 
 }

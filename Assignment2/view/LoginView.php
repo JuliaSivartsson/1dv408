@@ -12,11 +12,14 @@ class LoginView {
 	private static $keep = 'LoginView::KeepMeLoggedIn';
 	private static $messageId = 'LoginView::Message';
 
+    private $expirationDate;
 	private $model;
 	private $message;
+    private $number_of_days = 10;
 
 	public function __construct(\model\LoginModel $loginModel){
 		$this->model = $loginModel;
+        $this->cookie = new \common\CookieStorage();
 	}
 
 	/**
@@ -110,6 +113,37 @@ class LoginView {
 	public function userWantsToBeRemembered(){
 		return isset($_POST[self::$keep]);
 	}
+
+	//Save cookie and remember user
+	public function rememberUser(){
+		$hashedPassword = $this->model->getHashedPassword();
+
+        $this->expirationDate = time() + (86400 * 30) * $this->number_of_days;
+
+        //Save cookie for name and password
+        $this->cookie->save(self::$cookieName, $this->getRequestUserName(), $this->expirationDate);
+        $this->cookie->save(self::$cookiePassword, $hashedPassword, $this->expirationDate);
+
+		return $hashedPassword;
+	}
+
+    public function isLoggedIn(){
+        return $this->isCookieSet() || $this->model->isUserSaved();
+    }
+
+    public function forgetUser(){
+        $this->cookie->delete(self::$cookieName);
+        $this->cookie->delete(self::$cookiePassword);
+    }
+
+    public function isUserComingBack(){
+        return $this->model->isUserSaved() === false && $this->isCookieSet();
+    }
+
+    public function isCookieSet(){
+        return $this->cookie->load(self::$cookieName) && $this->cookie->load(self::$cookiePassword);
+    }
+
 
     //Set message to show user
 	public function setMessage($message){
