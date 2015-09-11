@@ -4,21 +4,20 @@ namespace common;
 
 session_start();
 
+//Class for managing sessions
 class SessionStorage{
 
-    //public static $setSession = 'User::Name';
-
-    //Check if session is set
-    public function isSessionSet($key){
-        return isset($_SESSION[$key]);
+    //Check if session exists
+    public function isSessionSet($sessionName){
+        return isset($_SESSION[$sessionName]);
     }
     //Set session
-    public function setSession($key, $value){
-        $_SESSION[$key] = $value;
+    public function setSession($sessionName, $value){
+        $_SESSION[$sessionName] = $value;
     }
-    //Unset session
-    public function deleteSession($key){
-        unset($_SESSION[$key]);
+    //Delete session
+    public function deleteSession($sessionName){
+        unset($_SESSION[$sessionName]);
     }
 
 }

@@ -1,5 +1,5 @@
 <?php
-
+/*
 namespace model;
 
 class SessionStoragePersistor {
@@ -17,3 +17,5 @@ class SessionStoragePersistor {
         assert(isset($_SESSION));
     }
 }
+
+*/

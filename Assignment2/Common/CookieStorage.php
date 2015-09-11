@@ -2,6 +2,8 @@
 
 namespace common;
 
+
+//Class for managing cookies
 class CookieStorage{
 
     //Save new cookie

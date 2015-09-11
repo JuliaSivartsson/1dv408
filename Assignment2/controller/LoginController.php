@@ -6,21 +6,15 @@ class LoginController{
 
     private $loginModel;
     private $loginView;
-    private $dateTimeView;
     private $layoutView;
-
-    private static $nameLocation = "User::name";
 
     public function __construct(){
 
         $this->loginModel = new \model\LoginModel();
-
         $this->loginView = new \view\LoginView($this->loginModel);
         $this->layoutView = new \view\LayoutView();
-
         $this->sessionStorage = new \common\SessionStorage();
     }
-
 
     //Call HTML-code to be rendered
     public function render(){
@@ -36,6 +30,7 @@ class LoginController{
             $this->loginView->setMessage(\common\Messages::$logout);
         }
 
+        //If user is coming back with cookie
         if($this->loginView->isUserComingBack()){
             $this->loginView->setMessage(\common\Messages::$userReturning);
         }
@@ -43,17 +38,6 @@ class LoginController{
         //Render HTML
         $this->layoutView->getHTML($this->loginView->isLoggedIn(), $this->loginView);
     }
-
-    //Check if user is logged in or not
-    /*public function checkUserStatus(){
-        $isUserLoggedIn = $this->sessionStorage->isSessionSet();
-        if($isUserLoggedIn == TRUE){
-            return true;
-        }
-        else{
-            return false;
-        }
-    }*/
 
     //Login user
     public function doLogin(){
@@ -71,9 +55,10 @@ class LoginController{
             $this->loginView->setMessage(\common\Messages::$passwordEmpty);
             return;
         }
-        //If credentials is correct
+        //If credentials are correct
         if($this->loginModel->authenticate($username, $password)) {
             $this->loginView->setMessage(\common\Messages::$login);
+            //Login user in model
             $this->loginModel->login($username, $password);
 
             //If user wants to be remembered

@@ -127,23 +127,26 @@ class LoginView {
 		return $hashedPassword;
 	}
 
+    //Return true if cookie or session exists
     public function isLoggedIn(){
         return $this->isCookieSet() || $this->model->isUserSaved();
     }
 
+    //Delete cookie
     public function forgetUser(){
         $this->cookie->delete(self::$cookieName);
         $this->cookie->delete(self::$cookiePassword);
     }
 
+    //Returns true if session doesn't exist but cookie does
     public function isUserComingBack(){
         return $this->model->isUserSaved() === false && $this->isCookieSet();
     }
 
+    //Check if cookie exists
     public function isCookieSet(){
         return $this->cookie->load(self::$cookieName) && $this->cookie->load(self::$cookiePassword);
     }
-
 
     //Set message to show user
 	public function setMessage($message){

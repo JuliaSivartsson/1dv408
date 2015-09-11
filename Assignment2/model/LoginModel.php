@@ -5,22 +5,22 @@ use common\SessionStorage;
 
 require_once('DAL/PersistentLoginDAL.php');
 
-
 class LoginModel{
+
+    //The correct credentials for login
+    private $correctUsername = "Admin";
+    private $correctPassword = "Password";
 
     private static $nameLocation = "User::name";
     private static $passwordLocation = "Password::name";
 
-    private $correctUsername = "Admin";
-    private $correctPassword = "Password";
-
     private $variableToCrypt = "1dv408";
     private $hashedPassword;
-
     private $sessionStorage;
     private $persistentLoginDAL;
 
     public function __construct(){
+        //Encrypt the password
         $this->hashedPassword = crypt($this->generateToken(), sha1($this->variableToCrypt));
 
         $this->persistentLoginDAL = new PersistentLoginDAL();
@@ -34,6 +34,7 @@ class LoginModel{
         }
     }
 
+    //Generate random token for cookie
     private function generateToken() {
         $token = "";
         for ($i=0; $i < 30; $i++) {
@@ -42,10 +43,12 @@ class LoginModel{
         return $token;
     }
 
+    //Does the session exists
     public function isUserSaved(){
         return $this->sessionStorage->isSessionSet(self::$nameLocation);
     }
 
+    //Save cookie on file
     public function savePersistentLogin($hash){
         $this->persistentLoginDAL->save($hash);
     }
