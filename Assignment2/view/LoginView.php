@@ -117,7 +117,6 @@ class LoginView {
 	//Save cookie and remember user
 	public function rememberUser(){
 		$hashedPassword = $this->model->getHashedPassword();
-
         $this->expirationDate = time() + (86400 * 30) * $this->number_of_days;
 
         //Save cookie for name and password
@@ -147,6 +146,16 @@ class LoginView {
     public function isCookieSet(){
         return $this->cookie->load(self::$cookieName) && $this->cookie->load(self::$cookiePassword);
     }
+
+	public function didUserChangeCookie(){
+		if($this->isCookieSet()){
+            return $this->model->getUsername() !== $this->cookie->load(self::$cookieName) ||
+                $this->model->getPersistentLogin() !== $this->cookie->load(self::$cookiePassword);
+		}
+        else{
+            return false;
+        }
+	}
 
     //Set message to show user
 	public function setMessage($message){

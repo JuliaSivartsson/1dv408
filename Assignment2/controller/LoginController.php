@@ -18,25 +18,38 @@ class LoginController{
 
     //Call HTML-code to be rendered
     public function render(){
+        if($this->isUserOkay()) {
 
-        //If user tries to login and is not logged in
-        if($this->loginView->loginAttempt() && $this->loginView->isLoggedIn() == FALSE){
-            $this->doLogin();
+            //If user tries to login and is not logged in
+            if ($this->loginView->loginAttempt() && $this->loginView->isLoggedIn() == FALSE) {
+                $this->doLogin();
+            }
+
+            //If user tries to logout and is logged in
+            if ($this->loginView->logoutAttempt() && $this->loginView->isLoggedIn() == TRUE) {
+                $this->doLogout();
+                $this->loginView->setMessage(\common\Messages::$logout);
+            }
+
+            //If user is coming back with cookie
+            if ($this->loginView->isUserComingBack()) {
+                $this->loginView->setMessage(\common\Messages::$userReturning);
+            }
         }
+            //Render HTML
+            $this->layoutView->getHTML($this->loginView->isLoggedIn(), $this->loginView);
+    }
 
-        //If user tries to logout and is logged in
-        if($this->loginView->logoutAttempt()&& $this->loginView->isLoggedIn() == TRUE){
+    public function isUserOkay(){
+        if($this->loginView->didUserChangeCookie()){
             $this->doLogout();
-            $this->loginView->setMessage(\common\Messages::$logout);
+            $this->loginView->setMessage(\common\Messages::$notOkayUser);
+            return false;
         }
-
-        //If user is coming back with cookie
-        if($this->loginView->isUserComingBack()){
-            $this->loginView->setMessage(\common\Messages::$userReturning);
+        else
+        {
+            return true;
         }
-
-        //Render HTML
-        $this->layoutView->getHTML($this->loginView->isLoggedIn(), $this->loginView);
     }
 
     //Login user
@@ -64,7 +77,8 @@ class LoginController{
             //If user wants to be remembered
             if ($this->loginView->userWantsToBeRemembered()) {
                 //Set cookie
-                $id = $this->loginView->rememberUser();
+                $identify = $this->loginView->rememberUser();
+                $this->loginModel->savePersistentLogin($identify);
                 $this->loginView->setMessage(\common\Messages::$keepUserSignedIn);
             }
         }

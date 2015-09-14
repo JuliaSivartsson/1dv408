@@ -18,6 +18,7 @@ class LoginModel{
     private $hashedPassword;
     private $sessionStorage;
     private $persistentLoginDAL;
+    private $password;
 
     public function __construct(){
         //Encrypt the password
@@ -53,8 +54,16 @@ class LoginModel{
         $this->persistentLoginDAL->save($hash);
     }
 
+    public function getPersistentLogin(){
+        return $this->persistentLoginDAL->load();
+    }
+
     public function getHashedPassword(){
         return $this->hashedPassword;
+    }
+
+    public function getUsername(){
+        return $this->correctUsername;
     }
 
     public function login($username, $password){
