@@ -6,10 +6,11 @@ namespace model;
 class PersistentLoginDAL
 {
     private static $persistentLoginFile = "persistentLogin.txt";
+    private static $expirationTimeFile = "expirationTimes.txt";
 
     //Write to file
     public function save($token){
-        $handleFile = fopen(self::$persistentLoginFile, 'w') or die('ERROR');
+        $handleFile = fopen(self::$persistentLoginFile, 'w') or die('The file could not be opened. Please try again.');
         fwrite($handleFile, $token);
         fclose($handleFile);
     }
@@ -21,4 +22,22 @@ class PersistentLoginDAL
         fclose($handleFile);
         return $token;
     }
+
+    public function saveExpiration($nameExpiration, $passwordExpiration){
+        $handleFile = fopen(self::$expirationTimeFile, 'w') or die('The file could not be opened. Please try again');
+        fwrite($handleFile, $nameExpiration . "\n");
+        fwrite($handleFile, $passwordExpiration);
+        fclose($handleFile);
+    }
+
+    public function loadNameExpiration(){
+        $readFile = file(self::$expirationTimeFile);
+        return $readFile[0];
+    }
+    public function loadPasswordExpiration(){
+        $readFile = file(self::$expirationTimeFile);
+        return $readFile[1];
+    }
+
+
 }

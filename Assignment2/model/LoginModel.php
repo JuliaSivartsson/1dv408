@@ -18,7 +18,7 @@ class LoginModel{
     private $hashedPassword;
     private $sessionStorage;
     private $persistentLoginDAL;
-    private $password;
+    private $username;
 
     public function __construct(){
         //Encrypt the password
@@ -54,7 +54,19 @@ class LoginModel{
         $this->persistentLoginDAL->save($hash);
     }
 
-    public function getPersistentLogin(){
+    public function saveExpirationDate($howLongWillUserBeRemembered){
+        $this->persistentLoginDAL->save($howLongWillUserBeRemembered);
+    }
+
+    public function getNameExpiration(){
+        return $this->persistentLoginDAL->loadNameExpiration();
+    }
+
+    public function getPasswordExpiration(){
+        return $this->persistentLoginDAL->loadPasswordExpiration();
+    }
+
+    public function getStoredPassword(){
         return $this->persistentLoginDAL->load();
     }
 

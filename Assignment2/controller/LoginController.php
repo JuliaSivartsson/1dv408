@@ -40,10 +40,12 @@ class LoginController{
             $this->layoutView->getHTML($this->loginView->isLoggedIn(), $this->loginView);
     }
 
+    //Make sure user has not manipulated cookies
     public function isUserOkay(){
         if($this->loginView->didUserChangeCookie()){
             $this->doLogout();
-            $this->loginView->setMessage(\common\Messages::$notOkayUser);
+            $this->loginView->reloadPage();
+            $_SESSION['woop'] = $this->loginView->setMessage(\common\Messages::$notOkayUser);
             return false;
         }
         else
@@ -54,6 +56,10 @@ class LoginController{
 
     //Login user
     public function doLogin(){
+
+        if(isset($_SESSION['woop'])){
+            unset($_SESSION['woop']);
+        }
         //Get info from view
         $username = $this->loginView->getRequestUserName();
         $password = $this->loginView->getRequestPassword();
@@ -76,9 +82,14 @@ class LoginController{
 
             //If user wants to be remembered
             if ($this->loginView->userWantsToBeRemembered()) {
+
+                //Get hashed password and expirationdate
+                $passwordToIdentifyUser = $this->loginView->rememberUser();
+                $howLongWillUserBeRemembered = $this->loginView->getExpirationDate();
+
                 //Set cookie
-                $identify = $this->loginView->rememberUser();
-                $this->loginModel->savePersistentLogin($identify);
+                $this->loginModel->saveExpirationDate($howLongWillUserBeRemembered);
+                $this->loginModel->savePersistentLogin($passwordToIdentifyUser);
                 $this->loginView->setMessage(\common\Messages::$keepUserSignedIn);
             }
         }

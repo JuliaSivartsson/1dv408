@@ -7,6 +7,10 @@ require_once('LoginView.php');
 class LayoutView
 {
 
+  /**
+   * @param $isLoggedIn
+   * @param LoginView $loginView
+   */
   public function getHTML($isLoggedIn, LoginView $loginView)
   {
 
@@ -30,7 +34,10 @@ class LayoutView
     ';
   }
 
-  //If user is logged in or not
+  /**
+   * @param $isLoggedIn
+   * @return string
+   */
   private function renderIsLoggedIn($isLoggedIn)
   {
     if ($isLoggedIn) {
@@ -40,7 +47,9 @@ class LayoutView
     }
   }
 
-  //Show date and time
+  /**
+   * @return string
+   */
   public function showDateTime()
   {
     date_default_timezone_set('Europe/Stockholm');

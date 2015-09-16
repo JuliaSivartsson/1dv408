@@ -42,8 +42,12 @@ class LoginView {
 		return $response;
 	}
 
-    //Generate logout button
+	/**
+	 * @param $message
+	 * @return string
+	 */
 	private function generateLogoutButtonHTML($message) {
+
 		return '
 			<form  method="post" >
 				<p id="' . self::$messageId . '">' . $message .'</p>
@@ -52,12 +56,25 @@ class LoginView {
 		';
 	}
 
-	//Generate login form
+	/**
+	 * @param $message
+	 * @return string
+	 */
 	private function generateLoginFormHTML($message) {
+
+		if(isset($_SESSION['woop'])){
+
+			$message =  "" . $_SESSION['woop'];
+
+			//unset($_SESSION['woop']); <-- TODO borde inte detta fungera?
+		}
+
+
 		return '
 			<form method="post" > 
 				<fieldset>
 					<legend>Login - enter Username and password</legend>
+
 					<p id="' . self::$messageId . '">' . $message . '</p>
 					
 					<label for="' . self::$name . '">Username :</label>
@@ -71,6 +88,7 @@ class LoginView {
 				</fieldset>
 			</form>
 		';
+
 	}
 
 	//Get user input for username
@@ -114,7 +132,10 @@ class LoginView {
 		return isset($_POST[self::$keep]);
 	}
 
-	//Save cookie and remember user
+	/**
+	 * Save cookie and remember user
+	 * @return string
+	 */
 	public function rememberUser(){
 		$hashedPassword = $this->model->getHashedPassword();
         $this->expirationDate = time() + (86400 * 30) * $this->number_of_days;
@@ -129,6 +150,10 @@ class LoginView {
     //Return true if cookie or session exists
     public function isLoggedIn(){
         return $this->isCookieSet() || $this->model->isUserSaved();
+    }
+
+    public function getExpirationDate(){
+        return $this->expirationDate;
     }
 
     //Delete cookie
@@ -147,14 +172,33 @@ class LoginView {
         return $this->cookie->load(self::$cookieName) && $this->cookie->load(self::$cookiePassword);
     }
 
+	/**
+	 * Did user change state of existing cookie
+	 * @return bool
+	 */
 	public function didUserChangeCookie(){
 		if($this->isCookieSet()){
+			//Check if credentials matches cookie on file
             return $this->model->getUsername() !== $this->cookie->load(self::$cookieName) ||
-                $this->model->getPersistentLogin() !== $this->cookie->load(self::$cookiePassword);
+                $this->model->getStoredPassword() !== $this->cookie->load(self::$cookiePassword);
 		}
         else{
             return false;
         }
+	}
+
+	public function badUser(){
+
+		$value = "woop";
+
+		if($this->didUserChangeCookie()){
+			$this->reloadPage();
+			$_SESSION["newsession"]= $value;
+		}
+	}
+
+	public function reloadPage(){
+		header('Location: /' );
 	}
 
     //Set message to show user
