@@ -1,6 +1,7 @@
 <?php
 namespace model;
 
+use common\CookieStorage;
 use common\SessionStorage;
 
 require_once('DAL/PersistentLoginDAL.php');
@@ -26,6 +27,7 @@ class LoginModel{
 
         $this->persistentLoginDAL = new PersistentLoginDAL();
         $this->sessionStorage = new SessionStorage();
+        $this->cookieStorage =  new CookieStorage();
     }
 
     //Check if input matches correct credentials
@@ -55,7 +57,7 @@ class LoginModel{
     }
 
     public function saveExpirationDate($howLongWillUserBeRemembered){
-        $this->persistentLoginDAL->save($howLongWillUserBeRemembered);
+        $this->persistentLoginDAL->saveExpiration($howLongWillUserBeRemembered, $howLongWillUserBeRemembered);
     }
 
     public function getNameExpiration(){
@@ -81,6 +83,7 @@ class LoginModel{
     public function login($username, $password){
         $this->sessionStorage->setSession(self::$nameLocation, $username);
         $this->sessionStorage->setSession(self::$passwordLocation, $password);
+        return true;
     }
 
     public function logout() {

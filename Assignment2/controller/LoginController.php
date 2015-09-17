@@ -43,9 +43,9 @@ class LoginController{
     //Make sure user has not manipulated cookies
     public function isUserOkay(){
         if($this->loginView->didUserChangeCookie()){
+
             $this->doLogout();
-            $this->loginView->reloadPage();
-            $_SESSION['woop'] = $this->loginView->setMessage(\common\Messages::$notOkayUser);
+            $this->loginView->setMessage(\common\Messages::$notOkayUser);
             return false;
         }
         else
@@ -57,9 +57,10 @@ class LoginController{
     //Login user
     public function doLogin(){
 
-        if(isset($_SESSION['woop'])){
-            unset($_SESSION['woop']);
-        }
+       /* if(isset($_SESSION['badUser'])){
+            unset($_SESSION['badUser']);
+        }*/
+
         //Get info from view
         $username = $this->loginView->getRequestUserName();
         $password = $this->loginView->getRequestPassword();

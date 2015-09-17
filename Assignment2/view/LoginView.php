@@ -32,6 +32,27 @@ class LoginView {
 	public function response($isLoggedIn) {
 		$message = $this->message;
 
+        $messageID = "view::LoginView::message";
+
+        //Reload page after login to remove POST call
+        if($this->loginAttempt() && $isLoggedIn == TRUE){
+
+            if($this->userWantsToBeRemembered()){
+                $message = \common\Messages::$keepUserSignedIn;
+            }else{
+                $message = \common\Messages::$login;
+            }
+
+            $this->reloadPage();
+            $_SESSION['$messageID'] = $message;
+
+        } else if(isset($_SESSION['$messageID'])){
+
+            $message =  "" . $_SESSION['$messageID'];
+
+            unset($_SESSION['$messageID']);
+        }
+
         if($isLoggedIn){
             $response = $this->generateLogoutButtonHTML($message);
         }
@@ -62,15 +83,7 @@ class LoginView {
 	 */
 	private function generateLoginFormHTML($message) {
 
-		if(isset($_SESSION['woop'])){
-
-			$message =  "" . $_SESSION['woop'];
-
-			//unset($_SESSION['woop']); <-- TODO borde inte detta fungera?
-		}
-
-
-		return '
+        return '
 			<form method="post" > 
 				<fieldset>
 					<legend>Login - enter Username and password</legend>
@@ -178,23 +191,16 @@ class LoginView {
 	 */
 	public function didUserChangeCookie(){
 		if($this->isCookieSet()){
+
 			//Check if credentials matches cookie on file
             return $this->model->getUsername() !== $this->cookie->load(self::$cookieName) ||
-                $this->model->getStoredPassword() !== $this->cookie->load(self::$cookiePassword);
+                $this->model->getStoredPassword() !== $this->cookie->load(self::$cookiePassword) ||
+                time() > $this->model->getNameExpiration() ||
+                time() > $this->model->getPasswordExpiration();
 		}
         else{
             return false;
         }
-	}
-
-	public function badUser(){
-
-		$value = "woop";
-
-		if($this->didUserChangeCookie()){
-			$this->reloadPage();
-			$_SESSION["newsession"]= $value;
-		}
 	}
 
 	public function reloadPage(){
