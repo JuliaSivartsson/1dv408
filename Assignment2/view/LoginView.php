@@ -44,13 +44,14 @@ class LoginView {
             }
 
             $this->reloadPage();
-            $_SESSION['$messageID'] = $message;
+            $_SESSION[$messageID] = $message;
 
-        } else if(isset($_SESSION['$messageID'])){
+        }
+        else if(isset($_SESSION[$messageID])){
 
-            $message =  "" . $_SESSION['$messageID'];
+            $message =  "" . $_SESSION[$messageID];
 
-            unset($_SESSION['$messageID']);
+            unset($_SESSION[$messageID]);
         }
 
         if($isLoggedIn){
@@ -175,12 +176,18 @@ class LoginView {
         $this->cookie->delete(self::$cookiePassword);
     }
 
-    //Returns true if session doesn't exist but cookie does
+    /**
+     * Returns true if session doesn't exist but cookie does
+     * @return bool
+     */
     public function isUserComingBack(){
         return $this->model->isUserSaved() === false && $this->isCookieSet();
     }
 
-    //Check if cookie exists
+    /**
+     * Check if cookie exists
+     * @return bool
+     */
     public function isCookieSet(){
         return $this->cookie->load(self::$cookieName) && $this->cookie->load(self::$cookiePassword);
     }

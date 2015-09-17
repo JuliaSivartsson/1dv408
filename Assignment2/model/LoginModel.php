@@ -19,7 +19,6 @@ class LoginModel{
     private $hashedPassword;
     private $sessionStorage;
     private $persistentLoginDAL;
-    private $username;
 
     public function __construct(){
         //Encrypt the password
@@ -30,14 +29,22 @@ class LoginModel{
         $this->cookieStorage =  new CookieStorage();
     }
 
-    //Check if input matches correct credentials
+    /**
+     * Check if input matches correct credentials
+     * @param $username
+     * @param $password
+     * @return bool
+     */
     public function authenticate($username, $password){
         if($username === $this->correctUsername && $password === $this->correctPassword){
             return true;
         }
     }
 
-    //Generate random token for cookie
+    /**
+     * Generate random token
+     * @return string
+     */
     private function generateToken() {
         $token = "";
         for ($i=0; $i < 30; $i++) {
@@ -56,18 +63,31 @@ class LoginModel{
         $this->persistentLoginDAL->save($hash);
     }
 
+    //Save expiration dates for name and password on file
     public function saveExpirationDate($howLongWillUserBeRemembered){
         $this->persistentLoginDAL->saveExpiration($howLongWillUserBeRemembered, $howLongWillUserBeRemembered);
     }
 
+    /**
+     * Get name expiration from file
+     * @return mixed
+     */
     public function getNameExpiration(){
         return $this->persistentLoginDAL->loadNameExpiration();
     }
 
+    /**
+     * Get password expiration from file
+     * @return mixed
+     */
     public function getPasswordExpiration(){
         return $this->persistentLoginDAL->loadPasswordExpiration();
     }
 
+    /**
+     * Get temporary password from file
+     * @return string
+     */
     public function getStoredPassword(){
         return $this->persistentLoginDAL->load();
     }

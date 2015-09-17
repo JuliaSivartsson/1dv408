@@ -40,10 +40,12 @@ class LoginController{
             $this->layoutView->getHTML($this->loginView->isLoggedIn(), $this->loginView);
     }
 
-    //Make sure user has not manipulated cookies
+    /**
+     * Make sure user has not manipulated cookies
+     * @return bool
+     */
     public function isUserOkay(){
         if($this->loginView->didUserChangeCookie()){
-
             $this->doLogout();
             $this->loginView->setMessage(\common\Messages::$notOkayUser);
             return false;
@@ -56,10 +58,6 @@ class LoginController{
 
     //Login user
     public function doLogin(){
-
-       /* if(isset($_SESSION['badUser'])){
-            unset($_SESSION['badUser']);
-        }*/
 
         //Get info from view
         $username = $this->loginView->getRequestUserName();
