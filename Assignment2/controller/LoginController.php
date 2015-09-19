@@ -7,6 +7,7 @@ class LoginController{
     private $loginModel;
     private $loginView;
     private $layoutView;
+    private $hasLoggedIn = false;
 
     public function __construct(){
 
@@ -37,7 +38,7 @@ class LoginController{
             }
         }
             //Render HTML
-            $this->layoutView->getHTML($this->loginView->isLoggedIn(), $this->loginView);
+            $this->layoutView->getHTML($this->loginView->isLoggedIn(), $this->loginView, $this->hasLoggedIn);
     }
 
     /**
@@ -63,12 +64,10 @@ class LoginController{
         $username = $this->loginView->getRequestUserName();
         $password = $this->loginView->getRequestPassword();
 
-        //If username is empty
         if($this->loginView->usernameMissing()){
             $this->loginView->setMessage(\common\Messages::$usernameEmpty);
             return;
         }
-        //If password is empty
         else if($this->loginView->passwordMissing()){
             $this->loginView->setMessage(\common\Messages::$passwordEmpty);
             return;
@@ -76,10 +75,9 @@ class LoginController{
         //If credentials are correct
         if($this->loginModel->authenticate($username, $password)) {
             $this->loginView->setMessage(\common\Messages::$login);
-            //Login user in model
+
             $this->loginModel->login($username, $password);
 
-            //If user wants to be remembered
             if ($this->loginView->userWantsToBeRemembered()) {
 
                 //Get hashed password and expirationdate
@@ -91,6 +89,8 @@ class LoginController{
                 $this->loginModel->savePersistentLogin($passwordToIdentifyUser);
                 $this->loginView->setMessage(\common\Messages::$keepUserSignedIn);
             }
+
+            $this->hasLoggedIn = true;
         }
         else{
             $this->loginView->setMessage(\common\Messages::$wrongCredentials);

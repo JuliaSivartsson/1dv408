@@ -40,17 +40,11 @@ class PersistentLoginDAL
         fclose($handleFile);
     }
 
-    /**
-     * @return mixed
-     */
     public function loadNameExpiration(){
         $readFile = file(self::$expirationTimeFile);
         return $readFile[0];
     }
 
-    /**
-     * @return mixed
-     */
     public function loadPasswordExpiration(){
         $readFile = file(self::$expirationTimeFile);
         return $readFile[1];

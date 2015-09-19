@@ -21,7 +21,6 @@ class CookieStorage{
         }
     }
 
-    //Delete a cookie
     public function delete($cookieName){
         unset($_COOKIE[$cookieName]);
         setcookie($cookieName, "", time() - 3600);

@@ -60,11 +60,13 @@ class LoginModel{
 
     //Save cookie on file
     public function savePersistentLogin($hash){
+        assert(is_string($hash));
         $this->persistentLoginDAL->save($hash);
     }
 
     //Save expiration dates for name and password on file
     public function saveExpirationDate($howLongWillUserBeRemembered){
+        assert(is_null($howLongWillUserBeRemembered));
         $this->persistentLoginDAL->saveExpiration($howLongWillUserBeRemembered, $howLongWillUserBeRemembered);
     }
 
@@ -101,6 +103,7 @@ class LoginModel{
     }
 
     public function login($username, $password){
+        assert(is_string($username) && is_string($password));
         $this->sessionStorage->setSession(self::$nameLocation, $username);
         $this->sessionStorage->setSession(self::$passwordLocation, $password);
         return true;

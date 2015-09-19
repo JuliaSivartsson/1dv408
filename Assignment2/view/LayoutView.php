@@ -2,8 +2,6 @@
 
 namespace view;
 
-require_once('LoginView.php');
-
 class LayoutView
 {
 
@@ -11,7 +9,7 @@ class LayoutView
    * @param $isLoggedIn
    * @param LoginView $loginView
    */
-  public function getHTML($isLoggedIn, LoginView $loginView)
+  public function getHTML($isLoggedIn, LoginView $loginView, $hasLoggedIn)
   {
 
     echo '<!DOCTYPE html>
@@ -25,7 +23,7 @@ class LayoutView
           ' . $this->renderIsLoggedIn($isLoggedIn) . '
           
           <div class="container">
-              ' . $loginView->response($isLoggedIn) . '
+              ' . $loginView->response($isLoggedIn, $hasLoggedIn) . '
               
               ' . $this->showDateTime() . '
           </div>

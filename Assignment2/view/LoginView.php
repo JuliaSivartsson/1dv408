@@ -3,6 +3,7 @@
 namespace view;
 
 class LoginView {
+
 	private static $login = 'LoginView::Login';
 	private static $logout = 'LoginView::Logout';
 	private static $name = 'LoginView::UserName';
@@ -15,7 +16,6 @@ class LoginView {
     private $expirationDate;
 	private $model;
 	private $message;
-    private $number_of_days = 10;
 
 	public function __construct(\model\LoginModel $loginModel){
 		$this->model = $loginModel;
@@ -29,13 +29,13 @@ class LoginView {
 	 *
 	 * @return  void BUT writes to standard output and cookies!
 	 */
-	public function response($isLoggedIn) {
-		$message = $this->message;
+	public function response($isLoggedIn, $hasLoggedIn) {
 
+        $message = $this->message;
         $messageID = "view::LoginView::message";
 
         //Reload page after login to remove POST call
-        if($this->loginAttempt() && $isLoggedIn == TRUE){
+        if($this->loginAttempt() && $isLoggedIn == TRUE && $hasLoggedIn == TRUE){
 
             if($this->userWantsToBeRemembered()){
                 $message = \common\Messages::$keepUserSignedIn;
@@ -43,13 +43,13 @@ class LoginView {
                 $message = \common\Messages::$login;
             }
 
-            $this->reloadPage();
             $_SESSION[$messageID] = $message;
+            $this->reloadPage();
 
         }
         else if(isset($_SESSION[$messageID])){
 
-            $message =  "" . $_SESSION[$messageID];
+            $message =  $_SESSION[$messageID];
 
             unset($_SESSION[$messageID]);
         }
@@ -121,12 +121,10 @@ class LoginView {
 		return null;
 	}
 
-	//If username is missing
 	public function usernameMissing(){
 		return empty($_POST[self::$name]);
 	}
 
-	//If password is missing
 	public function passwordMissing(){
 		return empty($_POST[self::$password]);
 	}
@@ -141,7 +139,6 @@ class LoginView {
 		return isset($_POST[self::$logout]);
 	}
 
-	//If user wants to be remembered
 	public function userWantsToBeRemembered(){
 		return isset($_POST[self::$keep]);
 	}
@@ -152,7 +149,7 @@ class LoginView {
 	 */
 	public function rememberUser(){
 		$hashedPassword = $this->model->getHashedPassword();
-        $this->expirationDate = time() + (86400 * 30) * $this->number_of_days;
+        $this->expirationDate = time() + (86400 * 30);
 
         //Save cookie for name and password
         $this->cookie->save(self::$cookieName, $this->getRequestUserName(), $this->expirationDate);
@@ -184,13 +181,19 @@ class LoginView {
         return $this->model->isUserSaved() === false && $this->isCookieSet();
     }
 
-    /**
-     * Check if cookie exists
-     * @return bool
-     */
+	//Check if both cookies exists
     public function isCookieSet(){
         return $this->cookie->load(self::$cookieName) && $this->cookie->load(self::$cookiePassword);
     }
+
+	/**
+	 * If time is larger than expirationdate, a cookie is removed.
+	 * This method checks to see if there is only one cookie when there should be two.
+	 * @return bool
+	 */
+	public function doesOneCookieExists(){
+		return $this->cookie->load(self::$cookieName) || $this->cookie->load(self::$cookiePassword);
+	}
 
 	/**
 	 * Did user change state of existing cookie
@@ -198,16 +201,18 @@ class LoginView {
 	 */
 	public function didUserChangeCookie(){
 		if($this->isCookieSet()){
-
 			//Check if credentials matches cookie on file
             return $this->model->getUsername() !== $this->cookie->load(self::$cookieName) ||
                 $this->model->getStoredPassword() !== $this->cookie->load(self::$cookiePassword) ||
                 time() > $this->model->getNameExpiration() ||
                 time() > $this->model->getPasswordExpiration();
 		}
-        else{
-            return false;
+        else if($this->doesOneCookieExists()){
+            return true;
         }
+		else{
+			return false;
+		}
 	}
 
 	public function reloadPage(){
@@ -216,6 +221,7 @@ class LoginView {
 
     //Set message to show user
 	public function setMessage($message){
+        assert(is_string($message));
 		return $this->message = $message;
 	}
 
