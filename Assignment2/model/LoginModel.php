@@ -35,7 +35,7 @@ class LoginModel{
      * @param $password
      * @return bool
      */
-    public function authenticate($username, $password){
+    public function authenticateLogin($username, $password){
         if($username === $this->correctUsername && $password === $this->correctPassword){
             return true;
         }

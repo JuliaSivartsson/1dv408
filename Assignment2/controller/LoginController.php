@@ -2,6 +2,9 @@
 
 namespace controller;
 
+
+use common\Messages;
+
 class LoginController{
 
     private $loginModel;
@@ -29,16 +32,16 @@ class LoginController{
             //If user tries to logout and is logged in
             if ($this->loginView->logoutAttempt() && $this->loginView->isLoggedIn() == TRUE) {
                 $this->doLogout();
-                $this->loginView->setMessage(\common\Messages::$logout);
+                $this->loginView->setMessage(Messages::$logout);
             }
 
             //If user is coming back with cookie
             if ($this->loginView->isUserComingBack()) {
-                $this->loginView->setMessage(\common\Messages::$userReturning);
+                $this->loginView->setMessage(Messages::$userReturning);
             }
         }
-            //Render HTML
-            $this->layoutView->getHTML($this->loginView->isLoggedIn(), $this->loginView, $this->hasLoggedIn);
+
+        $this->layoutView->getHTML($this->loginView->isLoggedIn(), $this->loginView, $this->hasLoggedIn);
     }
 
     /**
@@ -48,7 +51,7 @@ class LoginController{
     public function isUserOkay(){
         if($this->loginView->didUserChangeCookie()){
             $this->doLogout();
-            $this->loginView->setMessage(\common\Messages::$notOkayUser);
+            $this->loginView->setMessage(Messages::$notOkayUser);
             return false;
         }
         else
@@ -65,16 +68,16 @@ class LoginController{
         $password = $this->loginView->getRequestPassword();
 
         if($this->loginView->usernameMissing()){
-            $this->loginView->setMessage(\common\Messages::$usernameEmpty);
+            $this->loginView->setMessage(Messages::$usernameEmpty);
             return;
         }
         else if($this->loginView->passwordMissing()){
-            $this->loginView->setMessage(\common\Messages::$passwordEmpty);
+            $this->loginView->setMessage(Messages::$passwordEmpty);
             return;
         }
         //If credentials are correct
-        if($this->loginModel->authenticate($username, $password)) {
-            $this->loginView->setMessage(\common\Messages::$login);
+        if($this->loginModel->authenticateLogin($username, $password)) {
+            $this->loginView->setMessage(Messages::$login);
 
             $this->loginModel->login($username, $password);
 
@@ -87,13 +90,13 @@ class LoginController{
                 //Set cookie
                 $this->loginModel->saveExpirationDate($howLongWillUserBeRemembered);
                 $this->loginModel->savePersistentLogin($passwordToIdentifyUser);
-                $this->loginView->setMessage(\common\Messages::$keepUserSignedIn);
+                $this->loginView->setMessage(Messages::$keepUserSignedIn);
             }
 
             $this->hasLoggedIn = true;
         }
         else{
-            $this->loginView->setMessage(\common\Messages::$wrongCredentials);
+            $this->loginView->setMessage(Messages::$wrongCredentials);
         }
     }
 

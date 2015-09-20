@@ -2,6 +2,8 @@
 
 namespace view;
 
+use \common\Messages;
+
 class LoginView {
 
 	private static $login = 'LoginView::Login';
@@ -38,9 +40,9 @@ class LoginView {
         if($this->loginAttempt() && $isLoggedIn == TRUE && $hasLoggedIn == TRUE){
 
             if($this->userWantsToBeRemembered()){
-                $message = \common\Messages::$keepUserSignedIn;
+                $message = Messages::$keepUserSignedIn;
             }else{
-                $message = \common\Messages::$login;
+                $message = Messages::$login;
             }
 
             $_SESSION[$messageID] = $message;
