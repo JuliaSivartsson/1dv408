@@ -53,6 +53,9 @@ class LoginController{
             $this->doLogout();
             $this->loginView->setMessage(Messages::$notOkayUser);
             return false;
+        } else if($this->loginModel->isUserCorrect($this->loginView->getUserIdentifier()) === false){
+            $this->doLogout();
+            return false;
         }
         else
         {

@@ -19,6 +19,7 @@ class LoginModel{
     private $hashedPassword;
     private $sessionStorage;
     private $persistentLoginDAL;
+    private static $userID = "User::userIdentifier";
 
     public function __construct(){
         //Encrypt the password
@@ -56,6 +57,18 @@ class LoginModel{
     //Does the session exists
     public function isUserSaved(){
         return $this->sessionStorage->isSessionSet(self::$nameLocation);
+    }
+
+    public function isUserCorrect($userIdentifier){
+        assert(is_string($userIdentifier));
+
+        if($this->sessionStorage->isSessionSet(self::$userID)){
+            return $this->sessionStorage->getSession(self::$userID) === $userIdentifier;
+        }
+        else{
+            $this->sessionStorage->setSession(self::$userID, $userIdentifier);
+            return null;
+        }
     }
 
     //Save cookie on file

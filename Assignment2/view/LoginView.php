@@ -217,6 +217,11 @@ class LoginView {
 		}
 	}
 
+
+	public function getUserIdentifier(){
+		return $_SERVER['HTTP_USER_AGENT'];
+	}
+
 	public function reloadPage(){
 		header('Location: /' );
 	}
