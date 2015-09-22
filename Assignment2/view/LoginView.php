@@ -217,7 +217,11 @@ class LoginView {
 		}
 	}
 
-
+	/**
+	 * Gets information about the user
+	 * Is used to check if someone is using session hijacking
+	 * @return mixed
+	 */
 	public function getUserIdentifier(){
 		return $_SERVER['HTTP_USER_AGENT'];
 	}

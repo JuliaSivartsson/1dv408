@@ -59,7 +59,7 @@ class LoginModel{
         return $this->sessionStorage->isSessionSet(self::$nameLocation);
     }
 
-    public function isUserCorrect($userIdentifier){
+    public function isUserTheRightUser($userIdentifier){
         assert(is_string($userIdentifier));
 
         if($this->sessionStorage->isSessionSet(self::$userID)){
