@@ -4,15 +4,13 @@ namespace view;
 
 class LayoutView
 {
-
-
   private static $registerUser = "register";
 
   /**
    * @param $isLoggedIn
    * @param LoginView $loginView
    */
-  public function getHTML($isLoggedIn, IView $view, $hasLoggedIn)
+  public function render($isLoggedIn, IView $view)
   {
 
     echo '<!DOCTYPE html>
@@ -24,7 +22,7 @@ class LayoutView
         <body>
           <h1>Assignment 4</h1>
           '. $this->renderRegisterLink($isLoggedIn, $view) . $this->renderIsLoggedIn($isLoggedIn) . '
-          
+
           <div class="container">
               ' . $view->response() . '
 
@@ -50,10 +48,10 @@ class LayoutView
 
   private function renderRegisterLink($isLoggedIn, $view){
     if(get_class($view) === 'view\RegisterView'){
-      return "<a href='?'>Back to login</a>";
+        return "<a href='?'>Back to login</a>";
     }
     else if($isLoggedIn === false){
-      return "<a href='?" . self::$registerUser ."''>Register a new user</a>";
+        return "<a href='?" . self::$registerUser . "'>Register a new user</a>";
 
     }
     else{

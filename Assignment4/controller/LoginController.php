@@ -25,33 +25,34 @@ class LoginController{
 
     //Call HTML-code to be rendered
     public function render(){
+
+        //If user pressed link to register
         if($this->layoutView->UserWantsToRegister()){
             $this->registrationController = new \controller\RegistrationController($this->registrationView, $this->layoutView);
             $this->registrationController->doRender();
         }
-        else if($this->isUserOkay()) {
+        else {
+            if ($this->isUserOkay()) {
 
-            //If user tries to login and is not logged in
-            if ($this->loginView->loginAttempt() && $this->loginView->isLoggedIn() == FALSE) {
-                $this->doLogin();
+                //If user tries to login and is not logged in
+                if ($this->loginView->loginAttempt() && $this->loginView->isLoggedIn() == FALSE) {
+                    $this->doLogin();
+                }
+
+                //If user tries to logout and is logged in
+                if ($this->loginView->logoutAttempt() && $this->loginView->isLoggedIn() == TRUE) {
+                    $this->doLogout();
+                    $this->loginView->setMessage(Messages::$logout);
+                }
+
+                //If user is coming back with cookie
+                if ($this->loginView->isUserComingBack()) {
+                    $this->loginView->setMessage(Messages::$userReturning);
+                }
+
             }
-
-            //If user tries to logout and is logged in
-            if ($this->loginView->logoutAttempt() && $this->loginView->isLoggedIn() == TRUE) {
-                $this->doLogout();
-                $this->loginView->setMessage(Messages::$logout);
-            }
-
-            //If user is coming back with cookie
-            if ($this->loginView->isUserComingBack()) {
-                $this->loginView->setMessage(Messages::$userReturning);
-            }
-
-
-
-            $this->layoutView->getHTML($this->loginView->isLoggedIn(), $this->loginView, $this->hasLoggedIn);
+            $this->layoutView->render($this->loginView->isLoggedIn(), $this->loginView);
         }
-
     }
 
     /**

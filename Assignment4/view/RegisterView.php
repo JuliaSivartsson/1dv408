@@ -69,15 +69,19 @@ class RegisterView implements IView {
     public function getRegistrationInfo()
     {
         $message = "";
+        $isInfoOkay = true;
 
         if(strlen($this->getRegisterUsername()) < 3){
             $message .= \common\Messages::$usernameTooShort . "<br>";
+            $isInfoOkay = false;
         }
         if(strlen($this->getRegisterPassword()) < 6){
             $message .= \common\Messages::$passwordTooShort;
+            $isInfoOkay = false;
         }
 
         $this->message = $message;
+        return $isInfoOkay;
     }
 
 

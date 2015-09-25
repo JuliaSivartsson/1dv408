@@ -22,14 +22,19 @@ class RegistrationController{
             $this->doRegister();
         }
 
-        $this->layoutView->getHTML(false, $this->registerView, false);
+        $this->layoutView->render(false, $this->registerView, false);
     }
 
     public function doRegister(){
         $this->registerView->getRegisterPassword();
         $this->registerView->getRegisterUsername();
 
-        $this->registerView->getRegistrationInfo();
+        if($this->registerView->getRegistrationInfo()){
+
+        }
+        else{
+
+        }
     }
 
 }
