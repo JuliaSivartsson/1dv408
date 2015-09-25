@@ -14,4 +14,9 @@ class Messages{
     public static $userReturning = "Welcome back with cookie";
     public static $notOkayUser = "Wrong information in cookies";
 
+
+    public static $usernameTooShort = "Username has too few characters, at least 3 characters.";
+    public static $passwordTooShort = "Password has too few characters, at least 6 characters.";
+    public static $userExists = "User already exists";
+
 }

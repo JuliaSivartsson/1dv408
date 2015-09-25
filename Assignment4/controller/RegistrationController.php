@@ -18,7 +18,18 @@ class RegistrationController{
     //Call HTML-code to be rendered
     public function doRender(){
 
+        if($this->registerView->registerAttempt()){
+            $this->doRegister();
+        }
+
         $this->layoutView->getHTML(false, $this->registerView, false);
+    }
+
+    public function doRegister(){
+        $this->registerView->getRegisterPassword();
+        $this->registerView->getRegisterUsername();
+
+        $this->registerView->getRegistrationInfo();
     }
 
 }

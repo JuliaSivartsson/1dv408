@@ -48,6 +48,7 @@ class LoginController{
             }
 
 
+
             $this->layoutView->getHTML($this->loginView->isLoggedIn(), $this->loginView, $this->hasLoggedIn);
         }
 

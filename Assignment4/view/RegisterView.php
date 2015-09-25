@@ -7,7 +7,7 @@ use \common\Messages;
 class RegisterView implements IView {
 
     private static $username = 'RegisterView::UserName';
-    private static $password = 'LoginView::Password';
+    private static $password = 'RegisterView::Password';
     private static $repeatPassword = 'RegisterView::RepeatPassword';
     private static $registration = 'RegisterView::Registration';
     private static $messagePosition = 'RegisterView::Message';
@@ -50,5 +50,40 @@ class RegisterView implements IView {
     			</form>
 
     		";
+    }
+
+    public function registerAttempt(){
+        return isset($_POST[self::$registration]);
+    }
+
+    public function getRegisterUsername(){
+        assert($this->registerAttempt());
+        return $_POST[self::$username];
+    }
+
+    public function getRegisterPassword(){
+        assert($this->registerAttempt());
+        return $_POST[self::$password];
+    }
+
+    public function getRegistrationInfo()
+    {
+        $message = "";
+
+        if(strlen($this->getRegisterUsername()) < 3){
+            $message .= \common\Messages::$usernameTooShort . "<br>";
+        }
+        if(strlen($this->getRegisterPassword()) < 6){
+            $message .= \common\Messages::$passwordTooShort;
+        }
+
+        $this->message = $message;
+    }
+
+
+    //Set message to show user
+    public function setMessage($message){
+        assert(is_string($message));
+        return $this->message = $message;
     }
 }
