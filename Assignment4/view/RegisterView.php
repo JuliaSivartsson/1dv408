@@ -6,11 +6,11 @@ use \common\Messages;
 
 class RegisterView implements IView {
 
-    private static $username = 'RegisterView::UserName';
-    private static $password = 'RegisterView::Password';
-    private static $repeatPassword = 'RegisterView::RepeatPassword';
-    private static $registration = 'RegisterView::Registration';
-    private static $messagePosition = 'RegisterView::Message';
+    private static $username = "RegisterView::UserName";
+    private static $password = "RegisterView::Password";
+    private static $passwordRepeat = "RegisterView::PasswordRepeat";
+    private static $registration = "LoginView::Login";
+    private static $messageId = 'RegisterView::Message';
 
     private $message;
 
@@ -34,15 +34,15 @@ class RegisterView implements IView {
     			<form method='post' >
             <fieldset>
             <legend>Register a new user - Write username and password</legend>
-              <p id='" . self::$messagePosition . "'>" . $message ."</p>
+              <p id='" . self::$messageId . "'>" . $message ."</p>
               <label for='" . self::$username . "' >Username :</label>
-              <input type='text' size='20' name='" . self::$username . "' id='" . self::$username . "' value='' />
+              <input type='text' size='20' name='" . self::$username . "' id='" . self::$username . "' value='" . $this->getRegisterUsername()  ."' />
               <br/>
               <label for='" . self::$password . "' >Password  :</label>
               <input type='password' size='20' name='" . self::$password . "' id='" . self::$password . "' value='' />
               <br/>
-              <label for='" . self::$repeatPassword . "' >Repeat password  :</label>
-              <input type='password' size='20' name='" . self::$repeatPassword . "' id='" . self::$repeatPassword . "' value='' />
+              <label for='" . self::$passwordRepeat . "' >Repeat password  :</label>
+              <input type='password' size='20' name='" . self::$passwordRepeat . "' id='" . self::$passwordRepeat . "' value='' />
               <br/>
               <input id='submit' type='submit' name='" . self::$registration . "'  value='Register' />
               <br/>
@@ -52,18 +52,25 @@ class RegisterView implements IView {
     		";
     }
 
-    public function registerAttempt(){
+    public function registerAttempt() {
         return isset($_POST[self::$registration]);
     }
 
     public function getRegisterUsername(){
-        assert($this->registerAttempt());
-        return $_POST[self::$username];
+        if(isset($_POST[self::$username])) {
+            return $_POST[self::$username];
+        }
+        return null;
     }
 
     public function getRegisterPassword(){
         assert($this->registerAttempt());
         return $_POST[self::$password];
+    }
+
+    public function getRegisterRepeatPassword(){
+        assert($this->registerAttempt());
+        return $_POST[self::$passwordRepeat];
     }
 
     public function getRegistrationInfo()
@@ -81,6 +88,7 @@ class RegisterView implements IView {
         }
 
         $this->message = $message;
+
         return $isInfoOkay;
     }
 

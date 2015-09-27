@@ -53,6 +53,8 @@ class LoginController{
             }
             $this->layoutView->render($this->loginView->isLoggedIn(), $this->loginView);
         }
+
+
     }
 
     /**
@@ -76,11 +78,9 @@ class LoginController{
 
     //Login user
     public function doLogin(){
-
         //Get info from view
         $username = $this->loginView->getRequestUserName();
         $password = $this->loginView->getRequestPassword();
-
         if($this->loginView->usernameMissing()){
             $this->loginView->setMessage(Messages::$usernameEmpty);
             return;
@@ -92,21 +92,16 @@ class LoginController{
         //If credentials are correct
         if($this->loginModel->authenticateLogin($username, $password)) {
             $this->loginView->setMessage(Messages::$login);
-
             $this->loginModel->login($username, $password);
-
             if ($this->loginView->userWantsToBeRemembered()) {
-
                 //Get hashed password and expirationdate
                 $passwordToIdentifyUser = $this->loginView->rememberUser();
                 $howLongWillUserBeRemembered = $this->loginView->getExpirationDate();
-
                 //Set cookie
                 $this->loginModel->saveExpirationDate($howLongWillUserBeRemembered);
                 $this->loginModel->savePersistentLogin($passwordToIdentifyUser);
                 $this->loginView->setMessage(Messages::$keepUserSignedIn);
             }
-
             $this->hasLoggedIn = true;
         }
         else{

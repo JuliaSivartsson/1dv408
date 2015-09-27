@@ -32,37 +32,15 @@ class LoginView implements IView{
 	 * @return  void BUT writes to standard output and cookies!
 	 */
 	public function response() {
+		$message = $this->message;
 
-        $message = $this->message;
-        $messageID = "view::LoginView::message";
 
-        //Reload page after login to remove POST call
-        if($this->loginAttempt() && $this->isLoggedIn() == TRUE){
-
-            if($this->userWantsToBeRemembered()){
-                $message = Messages::$keepUserSignedIn;
-            }else{
-                $message = Messages::$login;
-            }
-
-            $_SESSION[$messageID] = $message;
-            $this->reloadPage();
-
-        }
-        else if(isset($_SESSION[$messageID])){
-
-            $message =  $_SESSION[$messageID];
-
-            unset($_SESSION[$messageID]);
-        }
-
-        if($this->isLoggedIn()){
-            $response = $this->generateLogoutButtonHTML($message);
-        }
-        else{
-            $response = $this->generateLoginFormHTML($message);
-        }
-
+		if($this->isLoggedIn()){
+			$response = $this->generateLogoutButtonHTML($message);
+		}
+		else{
+			$response = $this->generateLoginFormHTML($message);
+		}
 		return $response;
 	}
 

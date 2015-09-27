@@ -14,6 +14,7 @@ require_once('controller/LoginController.php');
 require_once('controller/RegistrationController.php');
 
 require_once('model/LoginModel.php');
+require_once('model/UserModel.php');
 
 require_once('common/Messages.php');
 require_once('common/SessionStorage.php');

@@ -79,7 +79,6 @@ class LoginModel{
 
     //Save expiration dates for name and password on file
     public function saveExpirationDate($howLongWillUserBeRemembered){
-        assert(is_null($howLongWillUserBeRemembered));
         $this->persistentLoginDAL->saveExpiration($howLongWillUserBeRemembered, $howLongWillUserBeRemembered);
     }
 
