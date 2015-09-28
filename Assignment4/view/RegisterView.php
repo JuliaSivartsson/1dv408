@@ -64,32 +64,47 @@ class RegisterView implements IView {
     }
 
     public function getRegisterPassword(){
-        assert($this->registerAttempt());
-        return $_POST[self::$password];
+        if(isset($_POST[self::$password])) {
+            return $_POST[self::$password];
+        }
     }
 
-    public function getRegisterRepeatPassword(){
-        assert($this->registerAttempt());
-        return $_POST[self::$passwordRepeat];
+    public function getRegisterPasswordRepeat(){
+        if(isset($_POST[self::$passwordRepeat])) {
+            return $_POST[self::$passwordRepeat];
+        }
     }
 
     public function getRegistrationInfo()
     {
         $message = "";
-        $isInfoOkay = true;
+        $canIRegisterNewUser = true;
 
         if(strlen($this->getRegisterUsername()) < 3){
             $message .= \common\Messages::$usernameTooShort . "<br>";
-            $isInfoOkay = false;
+            $canIRegisterNewUser = false;
         }
         if(strlen($this->getRegisterPassword()) < 6){
             $message .= \common\Messages::$passwordTooShort;
-            $isInfoOkay = false;
+            $canIRegisterNewUser = false;
+        }
+        if($this->getRegisterPassword() !== $_POST[self::$passwordRepeat]){
+            $message .= \common\Messages::$passwordIsNotSame;
+            $canIRegisterNewUser = false;
+        }
+        if($this->getRegisterUsername() !== strip_tags($this->getRegisterUsername())){
+            $message .= "Username contains invalid characters.";
+            $canIRegisterNewUser = false;
         }
 
         $this->message = $message;
 
-        return $isInfoOkay;
+        if($canIRegisterNewUser){
+            return new \model\UserModel($this->getRegisterUsername(), $this->getRegisterPassword());
+        }
+        else{
+            return null;
+        }
     }
 
 

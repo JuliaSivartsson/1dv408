@@ -16,6 +16,9 @@ require_once('controller/RegistrationController.php');
 require_once('model/LoginModel.php');
 require_once('model/UserModel.php');
 
+require_once('model/DAL/DBBase.php');
+require_once('model/DAL/UserRepository.php');
+
 require_once('common/Messages.php');
 require_once('common/SessionStorage.php');
 require_once('common/CookieStorage.php');

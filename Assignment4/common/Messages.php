@@ -19,5 +19,6 @@ class Messages{
     public static $passwordTooShort = "Password has too few characters, at least 6 characters.";
     public static $userExists = "User exists, pick another username.";
     public static $passwordIsNotSame = "Passwords do not match.";
+    public static $successfulRegistration = "Registered new user.";
 
 }

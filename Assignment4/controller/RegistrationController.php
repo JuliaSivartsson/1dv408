@@ -4,18 +4,22 @@ namespace controller;
 
 
 use common\Messages;
+use model\UserRepository;
 
 class RegistrationController{
 
     private $layoutView;
     private $registerView;
-    private $registerModel;
+    private $userModel;
+    private $userRepository;
+    private $database;
 
     public function __construct(\view\RegisterView $registrationView, \view\LayoutView $layoutView){
         $this->registerView = $registrationView;
         $this->layoutView = $layoutView;
 
-        $this->registerModel = new \model\UserModel();
+        $this->database = new UserRepository();
+
     }
 
     //Call HTML-code to be rendered
@@ -32,18 +36,26 @@ class RegistrationController{
         $password = $this->registerView->getRegisterPassword();
         $username = $this->registerView->getRegisterUsername();
 
-        if($this->registerView->getRegistrationInfo() == 1){
-            //check if passwords are equal
-            if(strcmp($this->registerView->getRegisterPassword(), $this->registerView->getRegisterRepeatPassword()) === 0){
+        $userToRegister = $this->registerView->getRegistrationInfo();
 
-                //check if user already exists
-                if($this->registerModel->doesUserAlreadyExists($username)){
 
+        if($userToRegister !== null){
+            try{
+
+                foreach($this->database->GetAll() as $users){
+                    echo $users->getUsername();
                 }
+
+                //save user to database
+                if($this->database->addUser($userToRegister) === 1){
+
+                    die('banan');
+                    //$this->registerView->setMessage(Messages::$successfulRegistration);
+                }
+            }catch (\Exception $e){
+                $this->registerView->setMessage($e->getMessage());
             }
-            else{
-                $this->registerView->setMessage(Messages::$passwordIsNotSame);
-            }
+
         }
         else{
 
