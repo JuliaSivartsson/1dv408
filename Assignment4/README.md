@@ -3,4 +3,4 @@ Repository for 1DV608 assignment 2
 
 This web application demonstrates a MVC implementation with PHP of a login system.
 
-[Test](testt)
+[Use Cases](https://github.com/dntoll/1DV608/blob/master/Assignments/Assignment_4/UC4.md)
