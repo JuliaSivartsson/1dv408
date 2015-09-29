@@ -1,4 +1,0 @@
-Admin,Password
-Julia,Secret
-Admub,Hejsan
-Mamma,Hejsan
