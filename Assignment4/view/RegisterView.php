@@ -112,11 +112,6 @@ class RegisterView implements IView {
         return $didUserJustRegister;
     }
 
-    public function reloadPage(){
-        header('Location: /Assignment4/index.php' );
-    }
-
-
     //Set message to show user
     public function setMessage($message){
         assert(is_string($message));

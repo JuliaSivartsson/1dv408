@@ -36,11 +36,6 @@ class LoginModel{
      * @param $password
      * @return bool
      */
-    public function authenticateLogin($username, $password){
-        if($username === $this->correctUsername && $password === $this->correctPassword){
-            return true;
-        }
-    }
 
     /**
      * Generate random token

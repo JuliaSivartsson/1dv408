@@ -6,8 +6,11 @@ use model\UserModel;
 class UserRepository{
 
     private $database;
+    private static $usernameColumn = 'username';
+    private static $passwordColumn = 'password';
 
     public function __construct(){
+        $this->dbTable = 'user';
         $connection = new DatabaseConnection();
 
         try{
@@ -18,8 +21,16 @@ class UserRepository{
     }
 
     public function save(UserModel $user){
-        $stmt = $this->database->prepare("INSERT INTO user (username, password) VALUE (?,?)");
-        $stmt->execute(array($user->getUsername(), $user->getPassword()));
+
+        try {
+
+            $sql = "INSERT INTO $this->dbTable (" . self::$usernameColumn . "," . self::$passwordColumn . ") VALUE (?,?)";
+            $params = array($user->getUsername(), password_hash($user->getPassword(), PASSWORD_DEFAULT));
+            $query = $this->database->prepare($sql);
+            $query->execute($params);
+        }catch(\PDOException $e){
+            return false;
+        }
     }
 
     public function getAllUsers()
@@ -31,6 +42,25 @@ class UserRepository{
             $ret[] =  new \model\UserModel($user->username, $user->password);
         }
         return $ret;
+    }
+
+    public function getUserByUsername($username){
+
+        try {
+
+            $sql = "SELECT * FROM $this->dbTable WHERE " . self::$usernameColumn . " = ?";
+            $params = array($username);
+            $query = $this->database->prepare($sql);
+            $query->execute($params);
+            $result = $query->fetch();
+            if ($result) {
+                $user = new \model\UserModel($result[self::$usernameColumn], $result[self::$passwordColumn]);
+                return $user;
+            }
+            return null;
+        } catch (\PDOException $e) {
+            die("PANIC");
+        }
     }
 
 }

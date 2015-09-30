@@ -44,6 +44,13 @@ class UserModel{
         return false;
     }
 
+    public function authenticateLogin($username, $password){
+        if(!is_string($username) || !is_string($password)){
+            throw new \Exception("User::authenticateLogin needs two strings as parameters");
+        }
+        return ($this->username === $username && password_verify($password, $this->password));
+    }
+
     public function getUsername(){
         return $this->username;
     }

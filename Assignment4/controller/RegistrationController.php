@@ -11,7 +11,6 @@ class RegistrationController{
     private $layoutView;
     private $registerView;
     private $userModel;
-    private $userRepository;
     private $database;
     private $cookieStorage;
 
@@ -46,8 +45,6 @@ class RegistrationController{
                         $this->userModel->saveNewUser($userToRegister);
                         $this->cookieStorage->save(\view\LoginView::SAVED_USERNAME, $userToRegister->getUserName(), time() + 3600);
                         return true;
-                        //$this->registerView->reloadPage();
-                        //$this->registerView->setMessage(Messages::$successfulRegistration);
                     }
 
                 }catch (\Exception $e){
