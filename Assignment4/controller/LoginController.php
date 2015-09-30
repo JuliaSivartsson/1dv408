@@ -21,6 +21,7 @@ class LoginController{
         $this->layoutView = new \view\LayoutView();
         $this->registrationView = new \view\Registerview();
         $this->sessionStorage = new \common\SessionStorage();
+        $this->userRepository = new \model\dal\UserRepository();
     }
 
     //Call HTML-code to be rendered
@@ -90,6 +91,8 @@ class LoginController{
         //Get info from view
         $username = $this->loginView->getRequestUserName();
         $password = $this->loginView->getRequestPassword();
+        $user = $this->userRepository->getUserByUsername($username);
+
         if($this->loginView->usernameMissing()){
             $this->loginView->setMessage(Messages::$usernameEmpty);
             return;
@@ -99,7 +102,7 @@ class LoginController{
             return;
         }
         //If credentials are correct
-        if($this->loginModel->authenticateLogin($username, $password)) {
+        if($this->userRepository->getUserByUsername($username) !== null && $user->authenticateLogin($username, $password)) {
             $this->loginView->setMessage(Messages::$login);
             $this->loginModel->login($username, $password);
             if ($this->loginView->userWantsToBeRemembered()) {

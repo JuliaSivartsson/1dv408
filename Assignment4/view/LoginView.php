@@ -229,10 +229,11 @@ class LoginView implements IView{
 	public function getUserIdentifier(){
 		return $_SERVER['HTTP_USER_AGENT'];
 	}
-
+	
 	public function reloadPage(){
-		header('Location: /' );
+		header('Location: /Assignment4/index.php' );
 	}
+
 
     //Set message to show user
 	public function setMessage($message){
