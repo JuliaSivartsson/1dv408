@@ -5,8 +5,6 @@ error_reporting(E_ALL);
 ini_set('display_errors', 'On');
 
 //Include the needed files
-require_once('Settings.php');
-
 require_once('view/IView.php');
 require_once('view/LoginView.php');
 require_once('view/LayoutView.php');
