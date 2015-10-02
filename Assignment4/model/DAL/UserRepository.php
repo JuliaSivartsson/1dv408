@@ -25,7 +25,7 @@ class UserRepository{
         try {
 
             $sql = "INSERT INTO $this->dbTable (" . self::$usernameColumn . "," . self::$passwordColumn . ") VALUE (?,?)";
-            $params = array($user->getUsername(), password_hash($user->getPassword(), PASSWORD_DEFAULT));
+            $params = array($user->getUsername(), sha1($user->getPassword()));
             $query = $this->database->prepare($sql);
             $query->execute($params);
         }catch(\PDOException $e){
