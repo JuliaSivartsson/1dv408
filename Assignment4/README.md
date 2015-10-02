@@ -1,7 +1,7 @@
-# Login_1DV608
-Repository for 1DV608 assignment 2
+# Registration_1DV608
+Repository for 1DV608 assignment 4
 
-This web application demonstrates a MVC implementation with PHP of a login system.
+Registration application built using the pattern MVC in PHP.
 
 [Use Cases](https://github.com/dntoll/1DV608/blob/master/Assignments/Assignment_4/UC4.md)
 
