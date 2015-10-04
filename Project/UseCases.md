@@ -1,6 +1,6 @@
 # Uce Cases
 
-####UC1 Register new user*
+####UC1 Register new user
 
 ####UC2 Login user
 
