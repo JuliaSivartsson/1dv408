@@ -2,7 +2,7 @@
 
 This appliction is my approach to building a small webshop in MVC using PHP.
 
-[Use Cases * comings soon]()
+[Use Cases](https://github.com/JuliaSivartsson/1dv408/blob/master/Project/UseCases.md)
 
 [Test Cases * comings soon]()
 
