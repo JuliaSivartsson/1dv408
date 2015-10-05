@@ -36,7 +36,7 @@ class UserRepository{
     public function getAllUsers()
     {
         $ret = array();
-        $stmt = $this->database->prepare("SELECT * FROM user ORDER BY username");
+        $stmt = $this->database->prepare("SELECT * FROM $this->dbTable ORDER BY ". self::$usernameColumn ."");
         $stmt->execute();
         while($user= $stmt->fetchObject()){
             $ret[] =  new \model\UserModel($user->username, $user->password);

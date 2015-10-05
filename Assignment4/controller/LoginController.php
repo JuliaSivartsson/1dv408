@@ -63,8 +63,6 @@ class LoginController{
             }
             $this->layoutView->render($this->loginView->isLoggedIn(), $this->loginView);
         }
-
-
     }
 
     /**

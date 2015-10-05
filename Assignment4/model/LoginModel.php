@@ -8,10 +8,6 @@ require_once('DAL/PersistentLoginDAL.php');
 
 class LoginModel{
 
-    //The correct credentials for login
-    private $correctUsername = "Admin";
-    private $correctPassword = "Password";
-
     private static $nameLocation = "User::name";
     private static $passwordLocation = "Password::name";
 
@@ -29,13 +25,6 @@ class LoginModel{
         $this->sessionStorage = new SessionStorage();
         $this->cookieStorage =  new CookieStorage();
     }
-
-    /**
-     * Check if input matches correct credentials
-     * @param $username
-     * @param $password
-     * @return bool
-     */
 
     /**
      * Generate random token
@@ -103,10 +92,6 @@ class LoginModel{
 
     public function getHashedPassword(){
         return $this->hashedPassword;
-    }
-
-    public function getUsername(){
-        return $this->correctUsername;
     }
 
     public function login($username, $password){

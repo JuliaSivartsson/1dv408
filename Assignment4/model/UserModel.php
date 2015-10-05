@@ -48,6 +48,7 @@ class UserModel{
         if(!is_string($username) || !is_string($password)){
             throw new \Exception("User::authenticateLogin needs two strings as parameters");
         }
+
         return ($this->username === $username && $this->password === sha1($password));
     }
 
