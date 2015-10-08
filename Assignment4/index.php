@@ -3,7 +3,10 @@
 //Include needed file
 require_once('config.php');
 
-//Create object of the controller
-$controller = new \controller\LoginController();
-$controller->render();
+$m = new \model\LoginModel();
+$v = new \view\LoginView($m);
+$c = new \controller\LoginController($m, $v);
 
+$c->render();
+$lv = new \view\LayoutView();
+$lv->render($v->isLoggedIn(), $v);
