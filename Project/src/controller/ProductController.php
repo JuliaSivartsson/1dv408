@@ -9,8 +9,11 @@
 namespace controller;
 
 
+use common\Messages;
+
 class ProductController
 {
+
 
     private $defaultView;
     private $navigationView;
@@ -27,6 +30,7 @@ class ProductController
     private $productView;
     private $productController;
     private $productBasketView;
+    private $productBasketModel;
 
     /* @var $navView \view\NavigationView */
     private $navView;
@@ -52,11 +56,11 @@ class ProductController
             case \view\NavigationView::LoginUser :
                 return $this->navView->GetBackLink() . $this->loginView->response();
                 break;
-            /*case \view\NavigationView::ViewAllProducts :
-                return $this->navView->GetBackLink() . $this->productView->ViewAllProducts();
+            case \view\NavigationView::ViewBasket :
+                return $this->navView->GetBackLink() . $this->productView->ViewBasket();
                 break;
-            case \view\NavigationView::EditMember :
-                return $this->navView->GetBackLink() . $this->EditMember();
+            /*case \view\NavigationView::LoginMember :
+                return $this->navView->GetBackLink() . $this->LoginController->render();
                 break;
             case \view\NavigationView::AddMember :
                 return $this->navView->GetBackLink() . $this->AddMember();
@@ -80,110 +84,71 @@ class ProductController
     }
 
     public function Main(){
+
         $this->userRepository = new \model\dal\UserRepository();
         $this->productRepository = new \model\dal\ProductRepository();
-        $this->productBasketRepository = new \model\dal\ProductBasketRepository();
+        $this->productBasketModel = new \model\ProductBasketModel();
 
-        $this->defaultView = new \view\LayoutView();
+        $this->defaultView = new \view\DefaultView();
         $this->navView = new \view\NavigationView();
         $this->productBasketView = new \view\ProductBasketView();
+
         $this->loginModel = new \model\LoginModel();
         $this->loginView = new \view\LoginView($this->loginModel);
-        $this->loginModel = new \model\LoginModel();
         $this->loginController = new \controller\LoginController($this->loginView, $this->defaultView);
 
         $this->productView = new \view\ProductView($this->productRepository, $this->navView);
 
-        $this->productView->getFlashMessage();
+        $this->loginView->getFlashMessage();
 
+        if ($this->loginView->loginAttempt() && $this->loginView->isLoggedIn() == FALSE) {
+            $this->loginController->doLogin();
+            if($this->loginController->doLogin()){
+                $this->loginView->reloadPage();
+            }
+        }
+        if ($this->loginView->logoutAttempt() && $this->loginView->isLoggedIn() == TRUE) {
+            $this->loginController->doLogout();
+        }
 
         if($this->productView->wantsToAddProductToBasket()){
-            $productToAdd = $this->productView->getProductToAdd();
+            /*$productToAdd = $this->productView->getProductToAdd();
             $this->productBasketRepository->addItem($productToAdd);
+            $this->productView->setMessage(\common\Messages::$productSavedToBasket);*/
+
+            $productNameInBasket = $this->productView->rememberBasketForUser();
+            $howLongWillBasketBeRemembered = $this->loginView->getExpirationDate();
+
+            //Set cookie
+            $this->productBasketModel->saveExpirationDate($howLongWillBasketBeRemembered);
+            $this->productBasketModel->savePersistentBasket($productNameInBasket);
             $this->productView->setMessage(\common\Messages::$productSavedToBasket);
         }
 
         return $this->RunAction();
-
-
-        //User pushes login-link
-        /*if($this->loginView->loginAttempt() && $this->loginView->isLoggedIn() == FALSE) {
-            if($this->loginView->usernameMissing()) {
-                var_dump('fattas');
-                $this->productView->setMessage(Messages::$usernameEmpty);
-                return $this->navView->reloadLogin();
-            }
-            else{$this->doLogin();}
-            //$this->login = new \controller\LoginController($this->loginView, $this->defaultView);
-            //$this->productView->viewAllProducts();
-        }
-        else{
-            return $this->RunAction();
-        }
-*/
-        //$this->productView->getFlashMessage();
-
-        /*if ($this->isUserOkay()) {
-            //If user tries to login and is not logged in
-            if ($this->loginView->loginAttempt() && $this->loginView->isLoggedIn() == FALSE) {
-                $this->loginController->doLogin();
-            }
-
-            //If user tries to logout and is logged in
-            if ($this->loginView->logoutAttempt() && $this->loginView->isLoggedIn() == TRUE) {
-                $this->loginController->doLogout();
-                $this->productView->setFlashMessage(Messages::$logout);
-                $this->productView->reloadPage();
-            }
-
-            //If user is coming back with cookie
-            if ($this->loginView->isUserComingBack()) {
-                $this->loginView->setMessage(Messages::$userReturning);
-            }
-
-        }
-
-        if($this->navView->GetAction() == \view\NavigationView::ViewProduct ) {
-            $this->productView->viewProduct();
-        }
-
-            //$this->defaultView->getHTML($this->loginView->isLoggedIn(), $this->productView);
-            //If user pressed button to add product to basket
-            if ($this->productView->wantsToAddProductToBasket()) {
-
-                $productToAdd = $this->productView->getProductToAdd();
-                $this->productBasketRepository->addItem($productToAdd);
-
-                $this->productView->setFlashMessage(Messages::$addToBasket);
-                $this->productView->reloadPage();
-            } else {
-
-                $this->defaultView->getHTML($this->loginView->isLoggedIn(), $this->productView);
-            }*/
     }
 
-
-    public function doLogin(){
-        //Get info from view
-
+    /*public function doLogin(){
+//Get info from view
         $username = $this->loginView->getRequestUserName();
         $password = $this->loginView->getRequestPassword();
         $user = $this->userRepository->getUserByUsername($username);
 
         if($this->loginView->usernameMissing()){
-
-            $this->productView->setMessage(Messages::$usernameEmpty);
+            $this->loginView->setMessage(Messages::$usernameEmpty);
             return;
-            //return $this->loginView->response();
         }
         else if($this->loginView->passwordMissing()){
             $this->loginView->setMessage(Messages::$passwordEmpty);
-            //return $this->defaultView->getHTML($this->loginView->isLoggedIn(), $this->masterController->Main());
+            return;
         }
         //If credentials are correct
         if($this->userRepository->getUserByUsername($username) !== null && $user->authenticateLogin($username, $password)) {
             $this->loginView->setMessage(Messages::$login);
             $this->loginModel->login($username, $password);
+
+            //$this->defaultView->getHTML($this->loginView->isLoggedIn(), $this->Main());
+
             if ($this->loginView->userWantsToBeRemembered()) {
                 //Get hashed password and expirationdate
                 $passwordToIdentifyUser = $this->loginView->rememberUser();
@@ -199,23 +164,7 @@ class ProductController
         else{
             $this->loginView->setMessage(Messages::$wrongCredentials);
         }
-    }
-
-
-    public function isUserOkay(){
-        if($this->loginView->didUserChangeCookie()){
-            $this->doLogout();
-            $this->loginView->setMessage(Messages::$notOkayUser);
-            return false;
-        } else if($this->loginModel->isUserTheRightUser($this->loginView->getUserIdentifier()) === false){
-            $this->doLogout();
-            return false;
-        }
-        else
-        {
-            return true;
-        }
-    }
+    }*/
 
     public function AddProductToBasket(){
 

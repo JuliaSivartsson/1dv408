@@ -15,14 +15,7 @@ class ProductModel{
         $this->price = $price;
         $this->description = $description;
         $this->id = $id;
-
-        //$this->products = new dal\ProductRepository($this->id);
-
     }
-
-    /*public function getAll(){
-        return $this->productRepository->getAllProducts();
-    }*/
 
     public function getName(){
         return $this->name;
@@ -42,5 +35,13 @@ class ProductModel{
 
     public function setID($id){
         $this->id = $id;
+    }
+
+    public function getImage($imgSize = 220){
+        $pathToImage = "src/images/";
+        $imageExtention = ".jpg";
+        $image = '<img src="'.$pathToImage.$this->getName(). $imageExtention .'" width="'. $imgSize .'" alt="image">';
+
+        return $image;
     }
 }

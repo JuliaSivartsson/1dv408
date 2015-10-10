@@ -37,7 +37,6 @@ class LoginView implements IView{
 	public function response() {
 		$message = $this->message;
 
-
 		if($this->isLoggedIn()){
 			$response = $this->generateLogoutButtonHTML($message);
 		}
@@ -76,7 +75,6 @@ class LoginView implements IView{
 	 * @return string
 	 */
 	private function generateLoginFormHTML($message) {
-
         return '
 			<form method="post" > 
 				<fieldset>
@@ -208,8 +206,7 @@ class LoginView implements IView{
 	public function didUserChangeCookie(){
 		if($this->isCookieSet()){
 			//Check if credentials matches cookie on file
-            return $this->model->getUsername() !== $this->cookie->load(self::$cookieName) ||
-                $this->model->getStoredPassword() !== $this->cookie->load(self::$cookiePassword) ||
+            return $this->model->getStoredPassword() !== $this->cookie->load(self::$cookiePassword) ||
                 time() > $this->model->getNameExpiration() ||
                 time() > $this->model->getPasswordExpiration();
 		}
@@ -231,12 +228,13 @@ class LoginView implements IView{
 	}
 	
 	public function reloadPage(){
-		header('Location: /Assignment4/index.php' );
+		header('Location: /Project-inlog/index.php' );
 	}
 
 
     //Set message to show user
 	public function setMessage($message){
+
         assert(is_string($message));
 		return $this->message = $message;
 	}

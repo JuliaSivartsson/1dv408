@@ -1,0 +1,37 @@
+.center-text{
+    text-align: center;
+}
+
+.margin-left{
+    margin-left: 200px;
+}
+
+.margin-right{
+    float: right;
+    position: relative;
+    margin-right: 20px;
+}
+
+.top-banner{
+    height: 70px;
+    position: relative;
+}
+
+.loginDiv{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    margin-bottom: 10px;
+}
+
+.caption p{
+    font-size: 14px;
+}
+
+.caption a:link{
+    color: #fff;
+}
+
+.caption a:visited{
+    color: #fff;
+}

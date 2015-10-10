@@ -10,7 +10,8 @@ class NavigationView
     const ViewProduct = "ViewProduct";
     const LoginUser = "LoginUser";
     const AddProductToBasket = "AddProductToBasket";
-    //const DeleteMember = "DeleteMember";
+    const ViewBasket = "ViewBasket";
+    //const LoginMember = "LoginMember";
     //const EditBoat = "EditBoat";
     //const AddBoat = "AddBoat";
     //const DeleteBoat = "DeleteBoat";
@@ -24,6 +25,10 @@ class NavigationView
     /*public function GetDeleteMemberLink($extra, $title){
         return '<a href="?' . self::$action . '=' . self::DeleteMember . '&' . $extra . '">' . $title . '</a>';
     }*/
+    public function GetBasketLink($title){
+        return '<a href="?' . self::$action . '=' . self::ViewBasket . '">' . $title . '</a>';
+    }
+
     public function GetLoginUserLink($title){
         return '<a href="?' . self::$action . '=' . self::LoginUser . '">' . $title . '</a>';
     }
@@ -35,9 +40,10 @@ class NavigationView
         return '<a href="?' . self::$action . '=' . self::AddProductToBasket . '&' . $extra . '">' . $title . '</a>';
     }
 /*
-    public function GetDeleteBoatLink($extra, $title){
-        return '<a href="?' . self::$action . '=' . self::DeleteBoat . '&' . $extra . '">' . $title . '</a>';
+    public function GetLinkToLogin($extra, $title){
+        return '<a href="?' . self::$action . '=' . self::LoginMember . '&' . $extra . '">' . $title . '</a>';
     }*/
+
     public function getBackLink(){
         return '<div><a href="?">Go back</a></div>';
     }

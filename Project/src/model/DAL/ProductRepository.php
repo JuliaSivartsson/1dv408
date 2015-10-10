@@ -23,7 +23,7 @@ class ProductRepository{
     {
         $ret = array();
 
-        $stmt = $this->database->prepare("SELECT * FROM product ORDER BY name");
+        $stmt = $this->database->prepare("SELECT * FROM  $this->dbTable ORDER BY ". self::$NameColumn ."");
         $stmt->execute();
 
         while($product = $stmt->fetchObject()){
@@ -34,11 +34,22 @@ class ProductRepository{
     }
 
     public function getProductById($id){
-        $stmt = $this->database->prepare("SELECT * FROM product WHERE id = ?");
+        $stmt = $this->database->prepare("SELECT * FROM  $this->dbTable WHERE id = ?");
         $stmt->execute(array($id));
 
         if($product = $stmt->fetchObject()){
             return new \model\ProductModel($product->name, $product->price, $product->description);
+        }
+
+        throw new \Exception("Product not found");
+    }
+
+    public function getProductByName($name){
+        $stmt = $this->database->prepare("SELECT * FROM $this->dbTable WHERE ". self::$NameColumn ." = ?");
+        $stmt->execute(array($name));
+
+        if($product = $stmt->fetchObject()){
+            return new \model\ProductModel($product->name, $product->price, $product->description, $product->id);
         }
 
         throw new \Exception("Product not found");

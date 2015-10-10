@@ -9,13 +9,16 @@ class DefaultView
     private static $logout = 'LoginView::Logout';
     private $navView;
     private $logoutButton = "";
-    private $username;
+    private $renderBasket = "";
 
     public function getHTML($isLoggedIn, $body){
 
         if($isLoggedIn === true){
             $this->logoutButton = $this->generateLogoutButtonHTML();
+            $this->renderBasket = $this->renderBasketLink();
         }
+
+        //$this->renderIsLoggedIn($isLoggedIn) .
 
         echo '
             <!DOCTYPE html>
@@ -24,33 +27,26 @@ class DefaultView
                 <meta charset="UTF-8">
                 <title>Project</title>
                 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+                <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+                <link rel="stylesheet" href="src/styles/style.css">
             </head>
             <body>
-                '. $this->renderLoginLink($isLoggedIn) . $this->renderIsLoggedIn($isLoggedIn) . '
-                '. $this->logoutButton .'
+
             <div class="container">
+                <div class="top-banner">
+                    <div class="pull-left loginDiv">
+                        '. $this->renderLoginLink($isLoggedIn) . $this->logoutButton .'
+                    </div>
+                    <div class="pull-right">
+                        '. $this->renderBasket .'
+                    </div>
+                </div>
                     ' . $body . '
                 </div>
             </body>
             </html>
                     ';
     }
-
-   /* public function Render($productModel){
-
-        $ret = "";
-        foreach($productModel as $product){
-            $ret .= $product;
-        }
-        return '
-        <h1>Welcome to itzys webshop</h1>
-        <div class="jumbotron">
-        foreach(){
-        '. $ret .'
-        </div>
-
-        ';
-    }*/
 
     private function generateLogoutButtonHTML() {
 
@@ -61,14 +57,10 @@ class DefaultView
 		';
     }
 
-    public function UserWantsToLogin(){
+    /*public function UserWantsToLogin(){
         return isset($_GET[self::$loginUser]);
-    }
+    }*/
 
-    /**
-     * @param $isLoggedIn
-     * @return string
-     */
     private function renderIsLoggedIn($isLoggedIn)
     {
         if ($isLoggedIn) {
@@ -79,11 +71,7 @@ class DefaultView
     }
 
     private function renderLoginLink($isLoggedIn){
-
         $this->navView = new \view\NavigationView();
-        /*if(get_class($view) === 'view\RegisterView'){
-            return "<a href='?'>Back to login</a>";
-        }*/
         if($isLoggedIn === false){
             return $this->navView->GetLoginUserLink("Login");
 
@@ -93,16 +81,10 @@ class DefaultView
         }
     }
 
-    private function renderLogoutLink($isLoggedIn, $view){
-        if(get_class($view) === 'view\RegisterView'){
-            return "<a href='?'>Back to login</a>";
-        }
-        else if($isLoggedIn === false){
-            return "<a href='?" . self::$loginUser . "'>Login</a>";
+    private function renderBasketLink(){
+        $this->navView = new \view\NavigationView();
 
-        }
-        else{
-            return null;
-        }
+            return $this->navView->GetBasketLink("<i class='fa fa-shopping-cart fa-5x'></i>");
+
     }
 }

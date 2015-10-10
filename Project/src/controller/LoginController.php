@@ -16,6 +16,7 @@ class LoginController{
     private $productController;
     private $navView;
     private $productRepository;
+    private $persistentBasketDAL;
     private $productView;
     private $defaultView;
 
@@ -32,6 +33,7 @@ class LoginController{
         $this->productController = new \controller\ProductController();
         $this->navView = new \view\NavigationView();
         $this->productRepository = new \model\dal\ProductRepository();
+        $this->persistentBasketDAL = new \model\dal\ProductBasketDAL();
         $this->productView = new \view\ProductView($this->productRepository, $this->navView);
         $this->defaultView = new \view\DefaultView();
     }
@@ -54,7 +56,6 @@ class LoginController{
         }
         else {
             if ($this->isUserOkay()) {
-
                 //If user tries to login and is not logged in
                 if ($this->loginView->loginAttempt() && $this->loginView->isLoggedIn() == FALSE) {
                     $this->doLogin();
@@ -77,7 +78,7 @@ class LoginController{
             }
 
             if($this->loginView->isLoggedIn() === false) {
-                $this->layoutView->render($this->loginView->isLoggedIn(), $this->loginView);
+                $this->defaultView->getHTML($this->loginView->isLoggedIn(), $this->productController->Main());
             }
             else{
                 $this->defaultView->getHTML($this->loginView->isLoggedIn(), $this->productController->Main());
@@ -112,15 +113,17 @@ class LoginController{
         $user = $this->userRepository->getUserByUsername($username);
 
         if($this->loginView->usernameMissing()){
-            $this->loginView->setMessage(Messages::$usernameEmpty);
+
+            $this->loginView->setFlashMessage(Messages::$usernameEmpty);
             return;
         }
         else if($this->loginView->passwordMissing()){
-            $this->loginView->setMessage(Messages::$passwordEmpty);
+            $this->loginView->setFlashMessage(Messages::$passwordEmpty);
             return;
         }
         //If credentials are correct
         if($this->userRepository->getUserByUsername($username) !== null && $user->authenticateLogin($username, $password)) {
+
             $this->loginView->setMessage(Messages::$login);
             $this->loginModel->login($username, $password);
             if ($this->loginView->userWantsToBeRemembered()) {
@@ -142,8 +145,11 @@ class LoginController{
 
     //Logout user
     public function doLogout(){
+        $this->productView->forgetBasket();
+        $this->persistentBasketDAL->clearBasket();
         $this->loginView->forgetUser();
         $this->loginModel->logout();
+        $this->loginView->reloadPage();
     }
 
 }
