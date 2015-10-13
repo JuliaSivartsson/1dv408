@@ -40,7 +40,7 @@ class LoginController{
 
     //Call HTML-code to be rendered
     public function render(){
-        $this->loginView->getFlashMessage();
+       /* $this->loginView->getFlashMessage();
 
         //If user pressed link to register
         if($this->layoutView->UserWantsToRegister()){
@@ -83,7 +83,7 @@ class LoginController{
             else{
                 $this->defaultView->getHTML($this->loginView->isLoggedIn(), $this->productController->Main());
             }
-        }
+        }*/
     }
 
     /**
@@ -124,22 +124,24 @@ class LoginController{
         //If credentials are correct
         if($this->userRepository->getUserByUsername($username) !== null && $user->authenticateLogin($username, $password)) {
 
-            $this->loginView->setMessage(Messages::$login);
+            $this->loginView->setFlashMessage(Messages::$login);
             $this->loginModel->login($username, $password);
             if ($this->loginView->userWantsToBeRemembered()) {
+
                 //Get hashed password and expirationdate
                 $passwordToIdentifyUser = $this->loginView->rememberUser();
                 $howLongWillUserBeRemembered = $this->loginView->getExpirationDate();
+
                 //Set cookie
                 $this->loginModel->saveExpirationDate($howLongWillUserBeRemembered);
                 $this->loginModel->savePersistentLogin($passwordToIdentifyUser);
-                $this->loginView->setMessage(Messages::$keepUserSignedIn);
+                $this->loginView->setFlashMessage(Messages::$keepUserSignedIn);
             }
             $this->hasLoggedIn = true;
             return true;
         }
         else{
-            $this->loginView->setMessage(Messages::$wrongCredentials);
+            $this->loginView->setFlashMessage(Messages::$wrongCredentials);
         }
     }
 

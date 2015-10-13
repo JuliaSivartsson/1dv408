@@ -6,14 +6,14 @@ namespace view;
 class NavigationView
 {
     const ViewAllProducts = "ViewAllProducts";
-    //const ViewAll = "ViewAll";
+    const RemoveItemFromBasket = "RemoveItemFromBasket";
     const ViewProduct = "ViewProduct";
     const LoginUser = "LoginUser";
     const AddProductToBasket = "AddProductToBasket";
     const ViewBasket = "ViewBasket";
-    //const LoginMember = "LoginMember";
-    //const EditBoat = "EditBoat";
-    //const AddBoat = "AddBoat";
+    const RegisterUser = "RegisterUser";
+    const ViewCheckout = "ViewCheckout";
+    const PurchaseProducts = "PurchaseProducts";
     //const DeleteBoat = "DeleteBoat";
     private static $action = "action";
     public function GetAction(){
@@ -22,9 +22,9 @@ class NavigationView
         }
         return null;
     }
-    /*public function GetDeleteMemberLink($extra, $title){
-        return '<a href="?' . self::$action . '=' . self::DeleteMember . '&' . $extra . '">' . $title . '</a>';
-    }*/
+    public function GetRegisterUserLink($title){
+        return '<a href="?' . self::$action . '=' . self::RegisterUser . '">' . $title . '</a>';
+    }
     public function GetBasketLink($title){
         return '<a href="?' . self::$action . '=' . self::ViewBasket . '">' . $title . '</a>';
     }
@@ -39,10 +39,18 @@ class NavigationView
     public function getAddToBasketLink($extra, $title){
         return '<a href="?' . self::$action . '=' . self::AddProductToBasket . '&' . $extra . '">' . $title . '</a>';
     }
-/*
-    public function GetLinkToLogin($extra, $title){
-        return '<a href="?' . self::$action . '=' . self::LoginMember . '&' . $extra . '">' . $title . '</a>';
-    }*/
+
+    public function getRemoveItemFromBasket($extra, $title){
+        return '<a href="?' . self::$action . '=' . self::RemoveItemFromBasket . '&' . $extra . '">' . $title . '</a>';
+    }
+
+    public function getViewCheckoutLink($title){
+        return '<a href="?' . self::$action . '=' . self::ViewCheckout . '">' . $title . '</a>';
+    }
+
+    public function getPurchaseProductsLink($title){
+        return '<a href="?' . self::$action . '=' . self::PurchaseProducts . '">' . $title . '</a>';
+    }
 
     public function getBackLink(){
         return '<div><a href="?">Go back</a></div>';

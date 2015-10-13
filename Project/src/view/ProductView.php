@@ -81,26 +81,37 @@ class ProductView implements IView
     }
 
 
-
-
     public function viewAllProducts(){
 
         $message = $this->message;
+
+        $limit      = ( isset( $_GET['limit'] ) ) ? $_GET['limit'] : 4;
+        $page       = ( isset( $_GET['page'] ) ) ? $_GET['page'] : 1;
+        $links      = ( isset( $_GET['links'] ) ) ? $_GET['links'] : 3;
+        $paginator = new \common\Paginator();
+
+
+        $paginationResults = $this->productRepository->getProductsPagination($page, $limit);
+        $allProducts = $this->productRepository->getAllProducts();
+
+        $totalRows = count($allProducts);
 
         $ret = '<div class="jumbotron">';
         $ret .= '<h1>Welcome</h1>';
         $ret .= '<h3>All products</h3>';
         $ret .= '<p id="' . self::$messageId . '">' . $message . '</p>';
+        $ret .= '<div class="pagination-links">'. $paginator->createLinks($page, $limit, $totalRows, $links, 'pagination pagination-sm').'</div>';
         $ret .= '<div class="row">';
 
-        foreach($this->productRepository->getAllProducts() as $product) {
+        foreach($paginationResults->data as $product) {
             $ret .= '<div class="col-sm-6 col-md-3">';
             $ret .= '<div class="thumbnail">';
-            $ret .= '<p>'.$product->getImage().'</p>';
+            $ret .= '<p>'. $product->getImage($product->getId()).'</p>';
             $ret .= '<div class="caption">';
             $ret .= '<h3>'. $product->getName() .'</h3>';
             $ret .= '<p>$'. $product->getPrice() .'</p>';
-            $ret .= '<p>'. $product->getDescription() .'</p>';
+            $ret .= '<p>' . $product->getQuantity(). ' in store</p>';
+            $ret .= '<p>' . substr($product->getDescription(),0, 100) . '</p>';
             $ret .= '<p class="btn btn-primary">' . $this->getViewLink($product) . PHP_EOL .'</p>';
             $ret .= '</div>';
             $ret .= '</div>';
@@ -115,49 +126,41 @@ class ProductView implements IView
 
         $message = $this->message;
 
-
         $id = $_GET['product'];
         $productToShow = $this->productRepository->getProductById($id);
 
         $ret = '<div class="jumbotron">';
-
         $ret .= '<div class="col-md-6">';
         $ret .= '</div>';
         $ret .= '<p id="' . self::$messageId . '">' . $message . '</p>';
         $ret .= '<h1>'.$productToShow->getName().'</h1>';
-        $ret .= '<ul>';
-        $ret .= '<p>'.$productToShow->getImage().'</p>';
-        $ret .= '<li>Price: $' . $productToShow->getPrice(). '</li>';
-        $ret .= '<li>Description: ' . $productToShow->getDescription(). '</li>';
+        $ret .= '<p>'.$productToShow->getImage($productToShow->getId()).'</p>';
+        $ret .= '<p>Price: $' . $productToShow->getPrice(). '</p>';
+        $ret .= '<p>' . $productToShow->getQuantity(). ' in store</p>';
+        $ret .= '<div class="description"><p>' . $productToShow->getDescription(). '</p></div>';
         if($this->loginView->isLoggedIn() === true) {
             $ret .= '
             <form method="post">
                 <input id="submit" class="btn btn-primary" type="submit" name="' . self::$addProductToBasket . '"  value="Add to basket" />
             </form>';
         }
-        $ret .= '</li>';
-        $ret .= '</ul>';
         $ret .= '</div>';
         return $ret;
     }
 
     public function viewBasket(){
-        $message = $this->message;
-
         if($basket = $this->persistentBasketDAL->load() === false){
             $ret = '<div class="jumbotron">';
             $ret .= '<p>You have no products in your basket yet!</p>';
             $ret .= '</div>';
         }
         else {
-            //Load cookies from file
-            $basket = $this->persistentBasketDAL->load();
-            $pieces = explode("\n", $basket);
 
-            $objectsToShow = array();
+            $pieces = $this->getProductsFromCookie();
+
             $allObjectsInCookie = array();
+            $objectsToShow = array();
             $totalPrice = 0;
-            $quantity = 1;
 
             foreach ($pieces as $productInBasket) {
 
@@ -175,6 +178,7 @@ class ProductView implements IView
 
                 }
             }
+
             $ret = '<div class="jumbotron">';
             $ret .= '<p>Products in your basket:</p>';
             $ret .= '<table class="table">';
@@ -192,33 +196,138 @@ class ProductView implements IView
 
 
                 $ret .= '<tr>';
-                $ret .= '<td><h3>'. $getObjectFromName->getImage(50) .' '.  $this->getViewLinkFromBasket($getObjectFromName) . PHP_EOL .'</h3>';
+                $ret .= '<td><h3>'. $getObjectFromName->getImage($getObjectFromName->getId(), 50) .' '.  $this->getViewLinkFromBasket($getObjectFromName) . PHP_EOL .'</h3>';
                 $ret .= '<td>$'. $getObjectFromName->getPrice() .'</td>';
                 $ret .= '<td>'. $quantity .'</td>';
-                $ret .= '<td>';
-                $ret .= '
-                    <form method="post">
-                        <input id="submit" class="btn btn-primary" type="submit" name="' . self::$removeFromBasket . '"  value="x" />
-                    </form>';
-                $ret .= '</td>';
+                $ret .= '<td>' . $this->removeItemFromBasketLink($getObjectFromName) . PHP_EOL .'</td>';
                 $ret .= '</tr>';
             }
             $ret .= '</table>';
             $ret .= '<h2>Total: $'. $totalPrice .'</h2>';
-            $ret .= '
-            <form method="post">
-                <input id="submit" class="btn btn-primary" type="submit" name="' . self::$orderBasket . '"  value="Checkout" />
-            </form>';
+            $ret .= '<div class="btn btn-primary btn-sm checkoutButton">' . $this->getViewCheckoutLink() . PHP_EOL .'</div>';
             $ret .= '</div>';
         }
         return $ret;
 
     }
 
+    public function viewCheckout(){
+
+        if($basket = $this->persistentBasketDAL->load() === false){
+            $ret = '<div class="jumbotron">';
+            $ret .= '<p>You have no products in your basket yet!</p>';
+            $ret .= '</div>';
+        }
+        else {
+
+            $pieces = $this->getProductsFromCookie();
+
+            $allObjectsInCookie = array();
+            $objectsToShow = array();
+            $totalPrice = 0;
+
+            foreach ($pieces as $productInBasket) {
+
+                if ($productInBasket != "") {
+
+
+                    if(in_array($productInBasket, $objectsToShow)) {
+                    }
+                    else{
+
+                        array_push($objectsToShow, $productInBasket);
+                    }
+
+                    array_push($allObjectsInCookie, $productInBasket);
+
+                }
+            }
+
+            $ret = '<div class="jumbotron">';
+            $ret .= '<h2>Checkout</h2>';
+            $ret .= '<table class="table table-striped table-hover">';
+            $ret .= '<tr>';
+            $ret .= '<th>Product</th>';
+            $ret .= '<th>Price per product</th>';
+            $ret .= '<th>Quantity</th>';
+            $ret .= '</tr>';
+            foreach ($objectsToShow as $basketItem) {
+                $getObjectFromName = $this->productRepository->getProductByName($basketItem);
+
+                $array_count = array_count_values($allObjectsInCookie);
+                $totalPrice += $getObjectFromName->getPrice() * $array_count["$basketItem"];
+                $quantity = $array_count["$basketItem"];
+
+
+                $ret .= '<tr>';
+                $ret .= '<td>'. $getObjectFromName->getName() .'</td>';
+                $ret .= '<td>$'. $getObjectFromName->getPrice() .'</td>';
+                $ret .= '<td>'. $quantity .'</td>';
+                $ret .= '</tr>';
+            }
+            $ret .= '</table>';
+            $ret .= '<h2>Total: $'. $totalPrice .'</h2>';
+            $ret .= '<div class="btn btn-primary btn-sm checkoutButton">' . $this->getPurchaseProductsLink() . PHP_EOL .'</div>';
+            $ret .= '</div>';
+        }
+        return $ret;
+
+    }
+
+    public function orderBasket(){
+        if(isset($_POST[self::$orderBasket])){
+            return $_POST[self::$orderBasket];
+        }
+    }
+
+    public function getProductsToOrder(){
+        $itemsInBasket = $this->getProductsFromCookie();
+
+        $getObjectFromName = Array();
+        foreach ($itemsInBasket as $productInBasket) {
+
+            if ($productInBasket != "") {
+                array_push($getObjectFromName, $this->productRepository->getProductByName($productInBasket));
+            }
+        }
+
+        return $getObjectFromName;
+    }
+
+    public function getProductsFromCookie(){
+        $basket = $this->persistentBasketDAL->load();
+        $pieces = explode("\n", $basket);
+        return $pieces;
+    }
+
     public function wantsToAddProductToBasket(){
         if(isset($_POST[self::$addProductToBasket])){
             return $_POST[self::$addProductToBasket];
         }
+    }
+
+    public function removeItemFromBasket(){
+        return isset($_POST[self::$removeFromBasket]);
+    }
+
+    public function getItemToRemoveFromBasket(){
+        $id = $_GET['product'];
+        $productToAdd = $this->productRepository->getProductById($id);
+        return $productToAdd;
+    }
+
+
+    private function getViewCheckoutLink(){
+        return $this->navView->getViewCheckoutLink("Checkout");
+    }
+
+
+    public function getPurchaseProductsLink(){
+            return $this->navView->getPurchaseProductsLink("Confirm");
+    }
+
+    private function removeItemFromBasketLink(\model\ProductModel $product){
+        return $this->navView->getRemoveItemFromBasket(self::$ProductPosition . '=' . $product->GetID(), "<i class='fa fa-times'></i>");
     }
 
     private function getViewLinkFromBasket(\model\ProductModel $product){

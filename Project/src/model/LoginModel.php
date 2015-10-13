@@ -23,7 +23,7 @@ class LoginModel{
 
     public function __construct(){
         //Encrypt the password
-        //$this->hashedPassword = crypt($this->generateToken(), sha1($this->variableToCrypt));
+        $this->hashedPassword = crypt($this->generateToken(), sha1($this->variableToCrypt));
 
         $this->persistentLoginDAL = new PersistentLoginDAL();
         $this->sessionStorage = new SessionStorage();
@@ -42,7 +42,6 @@ class LoginModel{
      * @return string
      */
     private function generateToken() {
-        var_dump('hej');
         $token = "";
         for ($i=0; $i < 30; $i++) {
             $token .= mt_rand(0, 9);

@@ -30,28 +30,30 @@ class RegisterView implements IView {
     private function generateRegistrationFormHTML($message){
 
     return "
-          <h2>Register new user</h2>
-    			<form method='post' >
-            <fieldset>
-            <legend>Register a new user - Write username and password</legend>
-              <p id='" . self::$messageId . "'>" . $message ."</p>
-              <div class='form-group'>
-              <label for='" . self::$username . "' >Username :</label>
-              <input type='text' size='20' name='" . self::$username . "' id='" . self::$username . "' value='" . strip_tags($this->getRegisterUsername())  ."' />
-              </div>
-              <div class='form-group'>
-              <label for='" . self::$password . "' >Password  :</label>
-              <input type='password' size='20' name='" . self::$password . "' id='" . self::$password . "' value='' />
-              </div>
-              <div class='form-group'>
-              <label for='" . self::$passwordRepeat . "' >Repeat password  :</label>
-              <input type='password' size='20' name='" . self::$passwordRepeat . "' id='" . self::$passwordRepeat . "' value='' />
-              </div>
-              <div class='form-group'>
-              <input id='submit' type='submit' name='" . self::$registration . "'  value='Register' />
-              </div>
-            </fieldset>
-    			</form>
+            <div class='jumbotron'>
+                <h2>Register new user</h2>
+                <form method='post' >
+                    <fieldset>
+                    <legend>Register a new user - Write username and password</legend>
+                      <p id='" . self::$messageId . "'>" . $message ."</p>
+                      <div class='form-group'>
+                      <label for='" . self::$username . "' >Username :</label>
+                      <input type='text' size='20' name='" . self::$username . "' id='" . self::$username . "' value='" . strip_tags($this->getRegisterUsername())  ."' />
+                      </div>
+                      <div class='form-group'>
+                      <label for='" . self::$password . "' >Password  :</label>
+                      <input type='password' size='20' name='" . self::$password . "' id='" . self::$password . "' value='' />
+                      </div>
+                      <div class='form-group'>
+                      <label for='" . self::$passwordRepeat . "' >Repeat password  :</label>
+                      <input type='password' size='20' name='" . self::$passwordRepeat . "' id='" . self::$passwordRepeat . "' value='' />
+                      </div>
+                      <div class='form-group'>
+                      <input id='submit' type='submit' name='" . self::$registration . "'  value='Register' />
+                      </div>
+                    </fieldset>
+                </form>
+            </div>
 
     		";
     }

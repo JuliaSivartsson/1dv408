@@ -8,12 +8,14 @@ class ProductModel{
     private $description;
     private $name;
     private $price;
+    private $quantity;
 
 
-    public function __construct($name, $price, $description, $id = 0){
+    public function __construct($name, $price, $description, $quantity, $id = 0){
         $this->name = $name;
         $this->price = $price;
         $this->description = $description;
+        $this->quantity = $quantity;
         $this->id = $id;
     }
 
@@ -29,6 +31,10 @@ class ProductModel{
         return $this->description;
     }
 
+    public function getQuantity(){
+        return $this->quantity;
+    }
+
     public function getId(){
         return $this->id;
     }
@@ -37,10 +43,10 @@ class ProductModel{
         $this->id = $id;
     }
 
-    public function getImage($imgSize = 220){
+    public function getImage($id, $imgSize = 220){
         $pathToImage = "src/images/";
         $imageExtention = ".jpg";
-        $image = '<img src="'.$pathToImage.$this->getName(). $imageExtention .'" width="'. $imgSize .'" alt="image">';
+        $image = '<img src="'.$pathToImage.$id. $imageExtention .'" width="'. $imgSize .'" alt="image">';
 
         return $image;
     }

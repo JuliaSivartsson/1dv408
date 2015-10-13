@@ -35,3 +35,50 @@
 .caption a:visited{
     color: #fff;
 }
+
+ul.product{
+    list-style-type: none;
+}
+
+.description{
+    width: 70%;
+    background-color: #fff;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.description p{
+    font-size: 15px;
+}
+
+.thumbnail{
+    height: 650px;
+}
+
+.thumbnail img{
+    max-height: 330px;
+}
+
+.pagination-links{
+    margin: 0 auto;
+    width: 200px;
+}
+
+
+.checkoutButton a:link, .checkoutButton a:visited{
+    color: #fff;
+}
+
+.checkoutTable tr:first-child th {
+    background: #333;
+    color: #fff;
+}
+.checkoutTable tr:nth-child(even) {
+    background-color: #BDADA8;
+    color: #333;
+}
+
+.checkoutTable tr:nth-child(odd) {
+    background-color: #DBCCC8;
+    color: #333;
+}

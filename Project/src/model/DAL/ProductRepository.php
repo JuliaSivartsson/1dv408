@@ -8,6 +8,11 @@ class ProductRepository{
     private static $NameColumn = 'name';
     private static $PriceColumn = 'price';
 
+    private $limit;
+    private $page;
+    private $total;
+    private $query;
+
     public function __construct(){
         $this->dbTable = 'product';
         $connection = new DatabaseConnection();
@@ -27,10 +32,42 @@ class ProductRepository{
         $stmt->execute();
 
         while($product = $stmt->fetchObject()){
-            $ret[] =  new \model\ProductModel($product->name, $product->price, $product->description, $product->id);
+            $ret[] =  new \model\ProductModel($product->name, $product->price, $product->description, $product->quantity, $product->id);
         }
 
         return $ret;
+    }
+
+    public function getProductsPagination($page = 1, $limit = 4){
+
+        $this->query = "SELECT * FROM  $this->dbTable ORDER BY ". self::$NameColumn ."";
+        //$stmt->execute();
+
+        $this->limit   = $limit;
+        $this->page    = $page;
+
+        if ( $this->limit == 'all' ) {
+            $limitQuery      = $this->query;
+        } else {
+            $limitQuery = $this->query . " LIMIT " . ( ( $this->page - 1 ) * $this->limit ) . ", $this->limit";
+
+        }
+
+        $rs = $this->database->prepare($limitQuery);
+        //$rs = $this->_conn->query( $query );
+        $rs->execute();
+
+        while($product = $rs->fetchObject()){
+            $ret[] =  new \model\ProductModel($product->name, $product->price, $product->description, $product->quantity, $product->id);
+        }
+
+        $result         = new \stdClass();
+        $result->page   = $this->page;
+        $result->limit  = $this->limit;
+        $result->total  = $this->total;
+        $result->data   = $ret;
+
+        return $result;
     }
 
     public function getProductById($id){
@@ -38,7 +75,7 @@ class ProductRepository{
         $stmt->execute(array($id));
 
         if($product = $stmt->fetchObject()){
-            return new \model\ProductModel($product->name, $product->price, $product->description);
+            return new \model\ProductModel($product->name, $product->price, $product->description, $product->quantity, $product->id);
         }
 
         throw new \Exception("Product not found");
@@ -49,7 +86,7 @@ class ProductRepository{
         $stmt->execute(array($name));
 
         if($product = $stmt->fetchObject()){
-            return new \model\ProductModel($product->name, $product->price, $product->description, $product->id);
+            return new \model\ProductModel($product->name, $product->price, $product->description, $product->quantity, $product->id);
         }
 
         throw new \Exception("Product not found");

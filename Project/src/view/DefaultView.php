@@ -7,15 +7,19 @@ class DefaultView
 {
     private static $loginUser = "loginUser";
     private static $logout = 'LoginView::Logout';
+    private static $registerUser = "register";
     private $navView;
+    private $registrationLink = "";
     private $logoutButton = "";
     private $renderBasket = "";
+    private $separationMark = " | ";
 
     public function getHTML($isLoggedIn, $body){
 
         if($isLoggedIn === true){
             $this->logoutButton = $this->generateLogoutButtonHTML();
             $this->renderBasket = $this->renderBasketLink();
+            $this->separationMark = "";
         }
 
         //$this->renderIsLoggedIn($isLoggedIn) .
@@ -35,7 +39,7 @@ class DefaultView
             <div class="container">
                 <div class="top-banner">
                     <div class="pull-left loginDiv">
-                        '. $this->renderLoginLink($isLoggedIn) . $this->logoutButton .'
+                        '. $this->renderLoginLink($isLoggedIn) . $this->separationMark . $this->renderRegisterLink($isLoggedIn) . $this->logoutButton .'
                     </div>
                     <div class="pull-right">
                         '. $this->renderBasket .'
@@ -67,6 +71,18 @@ class DefaultView
             return '<h3>Logged in</h3>';
         } else {
             return '<h3>Not logged in</h3>';
+        }
+    }
+
+    private function renderRegisterLink($isLoggedIn){
+        $this->navView = new \view\NavigationView();
+        if($isLoggedIn === false){
+            //return "<a href='?" . self::$registerUser . "'>Register a new user</a>";
+            return $this->navView->GetRegisterUserLink("Register a new user");
+
+        }
+        else{
+            return null;
         }
     }
 

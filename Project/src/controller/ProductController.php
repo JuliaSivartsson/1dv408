@@ -16,7 +16,7 @@ class ProductController
 
 
     private $defaultView;
-    private $navigationView;
+    private $registerView;
     private $loginView;
 
     /*public function __construct(){
@@ -41,8 +41,8 @@ class ProductController
 
     /* @var $navView \model\dal\BoatRepository */
     private $productRepository;
-    private $productBasketRepository;
-    private $login;
+    private $persistentBasketDAL;
+    private $registrationController;
     private $loginController;
 
     public function RunAction()
@@ -59,16 +59,16 @@ class ProductController
             case \view\NavigationView::ViewBasket :
                 return $this->navView->GetBackLink() . $this->productView->ViewBasket();
                 break;
-            /*case \view\NavigationView::LoginMember :
-                return $this->navView->GetBackLink() . $this->LoginController->render();
+            case \view\NavigationView::RemoveItemFromBasket :
+                return $this->navView->GetBackLink() . $this->removeItemFromBasket();
                 break;
-            case \view\NavigationView::AddMember :
-                return $this->navView->GetBackLink() . $this->AddMember();
+            case \view\NavigationView::RegisterUser :
+                return $this->navView->GetBackLink() . $this->registerView->response();
                 break;
-            case \view\NavigationView::DeleteMember :
-                return $this->navView->GetBackLink() . $this->DeleteMember();
+            case \view\NavigationView::ViewCheckout :
+                return $this->navView->GetBackLink() . $this->productView->viewCheckout();
                 break;
-            case \view\NavigationView::EditBoat :
+            /*case \view\NavigationView::EditBoat :
                 return $this->navView->GetBackLink() . $this->EditBoat();
                 break;
             case \view\NavigationView::AddBoat :
@@ -88,34 +88,46 @@ class ProductController
         $this->userRepository = new \model\dal\UserRepository();
         $this->productRepository = new \model\dal\ProductRepository();
         $this->productBasketModel = new \model\ProductBasketModel();
+        $this->persistentBasketDAL = new \model\dal\ProductBasketDAL();
 
         $this->defaultView = new \view\DefaultView();
         $this->navView = new \view\NavigationView();
         $this->productBasketView = new \view\ProductBasketView();
+        $this->registerView = new \view\RegisterView();
 
         $this->loginModel = new \model\LoginModel();
         $this->loginView = new \view\LoginView($this->loginModel);
         $this->loginController = new \controller\LoginController($this->loginView, $this->defaultView);
+        $this->registrationController = new \controller\RegistrationController($this->registerView, $this->defaultView);
 
         $this->productView = new \view\ProductView($this->productRepository, $this->navView);
 
         $this->loginView->getFlashMessage();
 
-        if ($this->loginView->loginAttempt() && $this->loginView->isLoggedIn() == FALSE) {
-            $this->loginController->doLogin();
-            if($this->loginController->doLogin()){
-                $this->loginView->reloadPage();
+        if ($this->loginController->isUserOkay()) {
+            //If user wants to login
+            if ($this->loginView->loginAttempt() && $this->loginView->isLoggedIn() == FALSE) {
+                $this->loginController->doLogin();
+                if ($this->loginController->doLogin()) {
+                    $this->loginView->reloadPage();
+                }
             }
-        }
-        if ($this->loginView->logoutAttempt() && $this->loginView->isLoggedIn() == TRUE) {
-            $this->loginController->doLogout();
+            //If user wants to logout
+            if ($this->loginView->logoutAttempt() && $this->loginView->isLoggedIn() == TRUE) {
+                $this->loginController->doLogout();
+            }
+
+            if ($this->loginView->isUserComingBack()) {
+                $this->loginView->setMessage(Messages::$userReturning);
+            }
+
+            //If user wants to remove item from basket
+            if ($this->productView->removeItemFromBasket()) {
+                $this->removeItemFromBasket();
+            }
         }
 
         if($this->productView->wantsToAddProductToBasket()){
-            /*$productToAdd = $this->productView->getProductToAdd();
-            $this->productBasketRepository->addItem($productToAdd);
-            $this->productView->setMessage(\common\Messages::$productSavedToBasket);*/
-
             $productNameInBasket = $this->productView->rememberBasketForUser();
             $howLongWillBasketBeRemembered = $this->loginView->getExpirationDate();
 
@@ -125,49 +137,32 @@ class ProductController
             $this->productView->setMessage(\common\Messages::$productSavedToBasket);
         }
 
+        if($this->productView->orderBasket()){
+            $this->doOrder();
+        }
+
+        //If user wants to register
+        if($this->registerView->registerAttempt()){
+            $this->registrationController->doRegister();
+        }
+
         return $this->RunAction();
     }
 
-    /*public function doLogin(){
-//Get info from view
-        $username = $this->loginView->getRequestUserName();
-        $password = $this->loginView->getRequestPassword();
-        $user = $this->userRepository->getUserByUsername($username);
+    public function doOrder(){
+        //get name products to order from view
+        $products = $this->productView->getProductsToOrder();
 
-        if($this->loginView->usernameMissing()){
-            $this->loginView->setMessage(Messages::$usernameEmpty);
-            return;
-        }
-        else if($this->loginView->passwordMissing()){
-            $this->loginView->setMessage(Messages::$passwordEmpty);
-            return;
-        }
-        //If credentials are correct
-        if($this->userRepository->getUserByUsername($username) !== null && $user->authenticateLogin($username, $password)) {
-            $this->loginView->setMessage(Messages::$login);
-            $this->loginModel->login($username, $password);
 
-            //$this->defaultView->getHTML($this->loginView->isLoggedIn(), $this->Main());
 
-            if ($this->loginView->userWantsToBeRemembered()) {
-                //Get hashed password and expirationdate
-                $passwordToIdentifyUser = $this->loginView->rememberUser();
-                $howLongWillUserBeRemembered = $this->loginView->getExpirationDate();
-                //Set cookie
-                $this->loginModel->saveExpirationDate($howLongWillUserBeRemembered);
-                $this->loginModel->savePersistentLogin($passwordToIdentifyUser);
-                $this->loginView->setMessage(Messages::$keepUserSignedIn);
-            }
-            $this->hasLoggedIn = true;
-            return true;
-        }
-        else{
-            $this->loginView->setMessage(Messages::$wrongCredentials);
-        }
-    }*/
+    }
 
-    public function AddProductToBasket(){
+    public function removeItemFromBasket()
+    {
+        $getItemToRemove = $this->productView->getItemToRemoveFromBasket();
+        $this->persistentBasketDAL->removeLineFromFile($getItemToRemove->getName());
 
+        return $this->productView->viewBasket();
     }
 
 

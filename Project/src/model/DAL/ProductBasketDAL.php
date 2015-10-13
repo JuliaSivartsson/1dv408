@@ -20,7 +20,7 @@ class ProductBasketDAL
      */
     public function save($token){
         $handleFile = fopen(self::$persistentBasketFile, 'a') or die('The file could not be opened. Please try again.');
-        fwrite($handleFile, $token. "\n");
+        fwrite($handleFile, "\n". $token);
         fclose($handleFile);
     }
 
@@ -63,6 +63,22 @@ class ProductBasketDAL
 
     public function clearBasket(){
         file_put_contents(self::$persistentBasketFile, '');
+    }
+
+    public function removeLineFromFile($lineToRemove){
+        assert(is_string($lineToRemove));
+
+        $lines = file(self::$persistentBasketFile, FILE_IGNORE_NEW_LINES);
+
+        $remove = $lineToRemove;
+        foreach($lines as $key => $line)
+            if(stristr($line, $remove)) unset($lines[$key]);
+
+        $data = implode(array_values($lines), "\n");
+
+        $file = fopen(self::$persistentBasketFile, 'w');
+        fwrite($file, $data);
+        fclose($file);
     }
 
 }

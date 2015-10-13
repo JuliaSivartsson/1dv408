@@ -14,7 +14,7 @@ class RegistrationController{
     private $database;
     private $cookieStorage;
 
-    public function __construct(\view\RegisterView $registrationView, \view\LayoutView $layoutView){
+    public function __construct(\view\RegisterView $registrationView, \view\DefaultView $layoutView){
         $this->registerView = $registrationView;
         $this->layoutView = $layoutView;
 
@@ -26,35 +26,31 @@ class RegistrationController{
     //Call HTML-code to be rendered
     public function doRegister(){
 
-        if($this->registerView->registerAttempt()){
-            $password = $this->registerView->getRegisterPassword();
-            $username = $this->registerView->getRegisterUsername();
+        $password = $this->registerView->getRegisterPassword();
+        $username = $this->registerView->getRegisterUsername();
 
 
-            $this->userModel = new \model\UserModel($username, $password);
-            $userToRegister = $this->registerView->getRegistrationInfo();
+        $this->userModel = new \model\UserModel($username, $password);
+        $userToRegister = $this->registerView->getRegistrationInfo();
 
 
-            if($userToRegister !== null){
-                try{
+        if($userToRegister !== null){
+            try{
 
-                    if($this->userModel->doesUserAlreadyExists($username)){
-                        $this->registerView->setMessage(Messages::$userExists);
-                    }
-                    else {
-                        $this->userModel->saveNewUser($userToRegister);
-                        $this->cookieStorage->save(\view\LoginView::SAVED_USERNAME, $userToRegister->getUserName(), time() + 3600);
-                        return true;
-                    }
-
-                }catch (\Exception $e){
-                    $this->registerView->setMessage($e->getMessage());
+                if($this->userModel->doesUserAlreadyExists($username)){
+                    $this->registerView->setMessage(Messages::$userExists);
+                }
+                else {
+                    $this->userModel->saveNewUser($userToRegister);
+                    $this->cookieStorage->save(\view\LoginView::SAVED_USERNAME, $userToRegister->getUserName(), time() + 3600);
+                    return true;
                 }
 
+            }catch (\Exception $e){
+                $this->registerView->setMessage($e->getMessage());
             }
-        }
 
-        $this->layoutView->render(false, $this->registerView);
+        }
         return false;
     }
 }
