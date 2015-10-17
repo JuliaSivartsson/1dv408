@@ -35,6 +35,7 @@
 **Alternate Scenarios**
 
 3a. No items are placed in the basket
+
 1. System presents a message to the user that the basket is empty
  
 ---------------
