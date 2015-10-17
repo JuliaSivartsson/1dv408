@@ -1,12 +1,17 @@
 # Uce Cases
 
-####UC1 Register new user
+####UC1 Register new user [find it here](https://github.com/dntoll/1DV608/blob/master/Assignments/Assignment_4/UC4.md)
 
-####UC2 Login user
+####UC2 Login user [find it here](https://github.com/dntoll/1DV608/blob/master/Assignments/Assignment_2/Assignment2_Use_Cases.md)
 
-####UC3 Logout user
+####UC3 Logout user [find it here](https://github.com/dntoll/1DV608/blob/master/Assignments/Assignment_2/Assignment2_Use_Cases.md)
 
 ####UC4 View product
+**Main scenario**
+
+Starts when a user wants has logged in
+System shows all products that exists
+
 
 ####UC5 Add product på basket
 
