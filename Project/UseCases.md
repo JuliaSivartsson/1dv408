@@ -18,19 +18,19 @@
 ####UC5 Add product på basket
 **Main scenario**
 
-*Starts when a user wants to add a product to basket
-*User navigates to ViewProducts page
-*User presses button to save product in basket
-*System retrieves the product and display success message to user
+* Starts when a user wants to add a product to basket
+* User navigates to ViewProducts page
+* User presses button to save product in basket
+* System retrieves the product and display success message to user
 
 ---------------
 
 ####UC6 View basket
 **Main scenario**
 
-*Starts when a user wants to view his/hers basket
-*User presses the basket icon
-*Products in basket is shown in a table
+* Starts when a user wants to view his/hers basket
+* User presses the basket icon
+* Products in basket is shown in a table
 
 **Alternate Scenarios**
 
