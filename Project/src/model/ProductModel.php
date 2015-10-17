@@ -43,6 +43,10 @@ class ProductModel{
         $this->id = $id;
     }
 
+    public function reduceQuantity($numberToReduce){
+        $this->quantity = $this->quantity - $numberToReduce;
+    }
+
     public function getImage($id, $imgSize = 220){
         $pathToImage = "src/images/";
         $imageExtention = ".jpg";

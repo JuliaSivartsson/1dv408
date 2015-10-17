@@ -82,3 +82,27 @@ ul.product{
     background-color: #DBCCC8;
     color: #333;
 }
+
+.checkoutForm{
+    position: relative;
+    border: 1px solid #fff;
+    background-color: #CEE0C8;
+    padding: 10px 50px 10px 30px;
+    margin: 20px 0 20px 0;
+}
+
+.checkoutForm label{
+    font-weight: normal;
+}
+
+.checkoutMessage p{
+    font-size: 12px;
+}
+
+.checkoutInfo{
+    margin: 15px;
+}
+
+.checkoutInfo p{
+    font-size: 15px;
+}

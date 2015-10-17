@@ -6,6 +6,7 @@ class ProductRepository{
 
     private $database;
     private static $NameColumn = 'name';
+    private static $quantityColumn = 'quantity';
     private static $PriceColumn = 'price';
 
     private $limit;
@@ -79,6 +80,13 @@ class ProductRepository{
         }
 
         throw new \Exception("Product not found");
+    }
+
+    public function reduceQuantity($id, $numberToReduce){
+
+        $stmt = $this->database->prepare("UPDATE $this->dbTable SET ". self::$quantityColumn."= ? WHERE id=$id");
+
+        $stmt->execute(array($numberToReduce));
     }
 
     public function getProductByName($name){

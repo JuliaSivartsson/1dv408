@@ -23,6 +23,8 @@ class Messages{
     public static $forbiddenCharacters = "Username contains invalid characters.";
 
     public static $productSavedToBasket = "This product has been added to your basket.";
+    public static $orderComplete = "Thank you for your order!";
+    public static $orderCouldNotBeCreated = "Something went wrong! Make sure the quantity of your ordered objects exists.";
 
 
 }

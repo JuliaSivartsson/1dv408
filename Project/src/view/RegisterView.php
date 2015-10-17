@@ -4,7 +4,7 @@ namespace view;
 
 use \common\Messages;
 
-class RegisterView implements IView {
+class RegisterView {
 
     private static $username = "RegisterView::UserName";
     private static $password = "RegisterView::Password";

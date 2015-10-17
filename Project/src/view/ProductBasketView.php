@@ -9,7 +9,7 @@
 namespace view;
 
 
-class ProductBasketView implements IView
+class ProductBasketView //implements IView
 {
     public function response(){
 

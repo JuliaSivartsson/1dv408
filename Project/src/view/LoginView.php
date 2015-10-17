@@ -4,7 +4,7 @@ namespace view;
 
 use \common\Messages;
 
-class LoginView implements IView{
+class LoginView{
 
 	private static $login = 'LoginView::Login';
 	private static $logout = 'LoginView::Logout';
@@ -236,7 +236,6 @@ class LoginView implements IView{
 
     //Set message to show user
 	public function setMessage($message){
-
         assert(is_string($message));
 		return $this->message = $message;
 	}

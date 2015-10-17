@@ -16,6 +16,6 @@ $v = new \view\LoginView($m);
 //$c = new \controller\ProductController();
 //$c->render();
 //$lv = new \view\DefaultView();
-$lv->getHTML($v->isLoggedIn(), $controller->Main());
+$lv->getHTML($v->isLoggedIn(), $controller->main());
 
 //$this->defaultView->getHTML($this->loginView->isLoggedIn(), $this->productController->Main());

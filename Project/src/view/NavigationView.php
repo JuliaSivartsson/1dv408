@@ -14,22 +14,22 @@ class NavigationView
     const RegisterUser = "RegisterUser";
     const ViewCheckout = "ViewCheckout";
     const PurchaseProducts = "PurchaseProducts";
-    //const DeleteBoat = "DeleteBoat";
+    const ViewReceipt = "ViewReceipt";
     private static $action = "action";
-    public function GetAction(){
+    public function getAction(){
         if(isset($_GET[self::$action])){
             return $_GET[self::$action];
         }
         return null;
     }
-    public function GetRegisterUserLink($title){
+    public function getRegisterUserLink($title){
         return '<a href="?' . self::$action . '=' . self::RegisterUser . '">' . $title . '</a>';
     }
-    public function GetBasketLink($title){
+    public function getBasketLink($title){
         return '<a href="?' . self::$action . '=' . self::ViewBasket . '">' . $title . '</a>';
     }
 
-    public function GetLoginUserLink($title){
+    public function getLoginUserLink($title){
         return '<a href="?' . self::$action . '=' . self::LoginUser . '">' . $title . '</a>';
     }
     public function getViewProductLink($extra, $title){
@@ -52,10 +52,14 @@ class NavigationView
         return '<a href="?' . self::$action . '=' . self::PurchaseProducts . '">' . $title . '</a>';
     }
 
+    public function getViewReceiptLink($extra, $title){
+        return '<a href="?' . self::$action . '=' . self::ViewReceipt . '&' . $extra . '">' . $title . '</a>';
+    }
+
     public function getBackLink(){
         return '<div><a href="?">Go back</a></div>';
     }
-    public function ShowInstructions(){
+    public function showInstructions(){
         return '
     <h2>Menu</h2>
     <ol>
