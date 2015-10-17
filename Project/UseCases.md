@@ -52,5 +52,6 @@ Products in basket is shown in a table
 6b. Customer could not be saved (wrong information in form)
 1. System presents an error message
 3. Step 2 in main scenario.
-4. 
+
+
 ####UC 8 User and Admin recieve payment information
