@@ -42,12 +42,12 @@
 ####UC7 Make order on products in basket
 **Main scenario**
 
-1. Starts when a user wants to buy the products in basket
-2. User presses button to checkout
-3. A table with items in basket is shown
-4. A form is presented to create customer
-5. User provides ssn, firstname, lastname and email
-6. System saves the customer, order and orderitems and presents a success message
+* Starts when a user wants to buy the products in basket
+* User presses button to checkout
+* A table with items in basket is shown
+* A form is presented to create customer
+* User provides ssn, firstname, lastname and email
+* System saves the customer, order and orderitems and presents a success message
 
 **Alternate Scenarios**
 
