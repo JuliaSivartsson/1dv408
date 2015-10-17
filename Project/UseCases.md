@@ -11,6 +11,7 @@
 **Main scenario**
 
 Starts when a user wants has logged in
+
 System shows all products that exists
 
 ---------------
