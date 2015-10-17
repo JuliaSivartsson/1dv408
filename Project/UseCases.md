@@ -36,7 +36,7 @@ Products in basket is shown in a table
 
 3a. No items are placed in the basket
 1. System presents a message to the user that the basket is empty
-2. 
+ 
 ---------------
 
 ####UC7 Make order on products in basket
@@ -52,12 +52,15 @@ Products in basket is shown in a table
 **Alternate Scenarios**
 
 6a. The quantity of product is larger than exists in system and order could not be saved
+
 1. System presents an error message
-3. Step 2 in main scenario.
+2. Step 2 in main scenario.
+
 
 6b. Customer could not be saved (wrong information in form)
+
 1. System presents an error message
-3. Step 2 in main scenario.
+2. Step 2 in main scenario.
 
 ---------------
 
