@@ -4,7 +4,7 @@
 Jag ar länge varit intresserad av en webbshop's uppbyggnad men inte tidigare sett något tillfälle för mig att sätta mig  in i det.
 Så jag tänkte att det här projektet var ett perfekt tillfälle för det.
 
-#Målgrupp#
+###Målgrupp###
 En webbshop är så oerhört användbar i dagens samhälle så jag känner att min målgrupp är väldigt stor. Men jag har valt att i det här projektet rikta mig till folk med ett
 fotointresse då jag använder mig av mina egna bilder som varor.
 
