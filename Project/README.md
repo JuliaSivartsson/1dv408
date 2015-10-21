@@ -7,6 +7,6 @@ This appliction is my approach to building a small webshop in MVC using PHP.
 
 [Use Cases](https://github.com/JuliaSivartsson/1dv408/blob/master/Project/UseCases.md)
 
-[Test Cases * comings soon]()
+[Test Cases](https://github.com/JuliaSivartsson/1dv408/blob/master/Project/TestCases.md)
 
-[Working version of application * comings soon]()
+[Working version of application](http://project1dv408.node365.se/)
