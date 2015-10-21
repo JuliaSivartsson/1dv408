@@ -17,4 +17,15 @@ When user wants to login a login form should be shown
 ##Test case 1.3 - Register##
 * Test cases for registration can be found [here](https://github.com/dntoll/1DV608/blob/master/Assignments/Assignment_4/TestCases.md)
 
+##Test case 1.4 - Product pagination##
+
+##Test case 1.5 - View product##
+
+##Test case 1.6 - Add product to basket##
+
+##Test case 1.7 - View basket##
+
+##Test case 1.8 - View checkout##
+
+##Test case 1.9 - Order products##
 
