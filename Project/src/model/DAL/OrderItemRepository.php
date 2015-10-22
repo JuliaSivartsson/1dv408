@@ -49,7 +49,6 @@ class OrderItemRepository
         while($orderItem = $stmt->fetchObject()){
             $ret[] =  new \model\OrderItemModel($orderItem->orderid, $orderItem->productid, $orderItem->id);
         }
-
         return $ret;
 
     }

@@ -30,8 +30,12 @@ class CustomerModel
     private $lastName;
     private $email;
 
+    private $customerRepository;
+
 
     public function __construct($ssn, $firstName, $lastName, $email, $id = 0){
+        $this->customerRepository = new dal\CustomerRepository();
+
         $this->ssn = $ssn;
         $this->firstName = trim($firstName);
         $this->lastName = trim($lastName);
@@ -74,6 +78,12 @@ class CustomerModel
         return $this->email;
     }
 
+    public function saveNewCustomerInRepository(CustomerModel $customer){
+        $this->customerRepository->save($customer);
+    }
 
+    public function getCustomerBySsn($ssn){
+        return $this->customerRepository->getCustomerBySsn($ssn);
+    }
 
 }

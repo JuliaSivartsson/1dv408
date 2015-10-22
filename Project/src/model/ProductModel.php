@@ -2,6 +2,8 @@
 
 namespace model;
 
+use model\dal\ProductRepository;
+
 class ProductModel{
 
     private $id;
@@ -9,6 +11,7 @@ class ProductModel{
     private $name;
     private $price;
     private $quantity;
+    private $productRepository;
 
 
     public function __construct($name, $price, $description, $quantity, $id = 0){
@@ -17,6 +20,12 @@ class ProductModel{
         $this->description = $description;
         $this->quantity = $quantity;
         $this->id = $id;
+
+        $this->productRepository = new ProductRepository();
+    }
+
+    public function saveProduct(){
+
     }
 
     public function getName(){
@@ -43,8 +52,13 @@ class ProductModel{
         $this->id = $id;
     }
 
-    public function reduceQuantity($numberToReduce){
-        $this->quantity = $this->quantity - $numberToReduce;
+    public function getProductsPagination($page, $limit){
+        return $this->productRepository->getProductsPagination($page, $limit);
+    }
+
+    public function getAllProducts(){
+        var_dump('hej');
+        return $this->productRepository->getAllProducts();
     }
 
     public function getImage($id, $imgSize = 220){
@@ -53,5 +67,13 @@ class ProductModel{
         $image = '<img src="'.$pathToImage.$id. $imageExtention .'" width="'. $imgSize .'" alt="image">';
 
         return $image;
+    }
+
+    public function getProductById($id){
+        return $this->productRepository->getProductById($id);
+    }
+
+    public function reduceQuantity($id, $newQuantity){
+        $this->productRepository->reduceQuantity($id, $newQuantity);
     }
 }

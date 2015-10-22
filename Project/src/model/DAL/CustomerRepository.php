@@ -8,8 +8,7 @@
 
 namespace model\dal;
 
-
-    use model\CustomerModel;
+use model\CustomerModel;
 
 class CustomerRepository
 {
@@ -34,7 +33,6 @@ class CustomerRepository
     public function save(CustomerModel $customer){
 
         try {
-
             $sql = "INSERT INTO $this->dbTable (" . self::$SSNColumn . "," . self::$FirstNameColumn . "," . self::$LastNameColumn . "," . self::$emailColumn . ") VALUE (?,?,?,?)";
             $params = array($customer->getSSN(), $customer->getFirstName(), $customer->getLastName(), $customer->getEmail());
 

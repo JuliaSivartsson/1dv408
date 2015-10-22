@@ -7,16 +7,16 @@ class Messages{
     //Messages to show to user in different situations
     public static $login = "Welcome";
     public static $logout = "Bye bye!";
-    public static $usernameEmpty = "Username is missing";
-    public static $passwordEmpty = "Password is missing";
+    public static $usernameIsNotCorrect = "Username is empty or has too few characters (needs at least 3 characters.)";
+    public static $passwordIsNotCorrect = "Password is empty or has too few characters (needs at least 6 characters.)";
     public static $wrongCredentials = "Wrong name or password";
     public static $keepUserSignedIn = "Welcome and you will be remembered";
     public static $userReturning = "Welcome back with cookie";
     public static $notOkayUser = "Wrong information in cookies";
 
 
-    public static $usernameTooShort = "Username has too few characters, at least 3 characters.";
-    public static $passwordTooShort = "Password has too few characters, at least 6 characters.";
+    public static $usernameTooShort = "Username is empty or has too few characters (needs at least 3 characters.)";
+    public static $passwordTooShort = "Password is empty or has too few characters (needs at least 6 characters.)";
     public static $userExists = "User exists, pick another username.";
     public static $passwordIsNotSame = "Passwords do not match.";
     public static $successfulRegistration = "Registered new user.";
@@ -25,6 +25,9 @@ class Messages{
     public static $productSavedToBasket = "This product has been added to your basket.";
     public static $orderComplete = "Thank you for your order!";
     public static $orderCouldNotBeCreated = "Something went wrong! Make sure the quantity of your ordered objects exists.";
+    public static $removedOneItem = "Removed one item from basket.";
+    public static $removedItems = "Removed all items of this kind in basket.";
+
 
 
 }

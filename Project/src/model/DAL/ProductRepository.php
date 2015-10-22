@@ -7,7 +7,6 @@ class ProductRepository{
     private $database;
     private static $NameColumn = 'name';
     private static $quantityColumn = 'quantity';
-    private static $PriceColumn = 'price';
 
     private $limit;
     private $page;
@@ -55,7 +54,6 @@ class ProductRepository{
         }
 
         $rs = $this->database->prepare($limitQuery);
-        //$rs = $this->_conn->query( $query );
         $rs->execute();
 
         while($product = $rs->fetchObject()){

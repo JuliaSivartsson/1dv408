@@ -21,9 +21,7 @@ class UserRepository{
     }
 
     public function save(UserModel $user){
-
         try {
-
             $sql = "INSERT INTO $this->dbTable (" . self::$usernameColumn . "," . self::$passwordColumn . ") VALUE (?,?)";
             $params = array($user->getUsername(), sha1($user->getPassword()));
             $query = $this->database->prepare($sql);
@@ -45,7 +43,6 @@ class UserRepository{
     }
 
     public function getUserByUsername($username){
-
         try {
 
             $sql = "SELECT * FROM $this->dbTable WHERE " . self::$usernameColumn . " = ?";
@@ -59,7 +56,7 @@ class UserRepository{
             }
             return null;
         } catch (\PDOException $e) {
-            die("PANIC");
+            die("User not found");
         }
     }
 

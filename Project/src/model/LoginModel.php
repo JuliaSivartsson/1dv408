@@ -4,7 +4,7 @@ namespace model;
 use common\CookieStorage;
 use common\SessionStorage;
 
-require_once('DAL/PersistentLoginDAL.php');
+require_once('dal/PersistentLoginDAL.php');
 
 class LoginModel{
     private static $nameLocation = "User::name";

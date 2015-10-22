@@ -35,7 +35,9 @@ class RegisterView {
                 <form method='post' >
                     <fieldset>
                     <legend>Register a new user - Write username and password</legend>
-                      <p id='" . self::$messageId . "'>" . $message ."</p>
+                      <div class='normal-font'>
+                        <p id='" . self::$messageId . "'>" . $message ."</p>
+                      </div>
                       <div class='form-group'>
                       <label for='" . self::$username . "' >Username :</label>
                       <input type='text' size='20' name='" . self::$username . "' id='" . self::$username . "' value='" . strip_tags($this->getRegisterUsername())  ."' />

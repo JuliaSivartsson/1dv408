@@ -27,13 +27,6 @@ class LoginView{
         $this->cookie = new \common\CookieStorage();
 	}
 
-	/**
-	 * Create HTTP response
-	 *
-	 * Should be called after a login attempt has been determined
-	 *
-	 * @return  void BUT writes to standard output and cookies!
-	 */
 	public function response() {
 		$message = $this->message;
 
@@ -46,7 +39,6 @@ class LoginView{
 		return $response;
 
 	}
-
 
 	public function getFlashMessage()
 	{
@@ -81,8 +73,9 @@ class LoginView{
 					<fieldset>
 						<legend>Login - enter Username and password</legend>
 
-						<p id="' . self::$messageId . '">' . $message . '</p>
-
+						<div class="normal-font">
+							<p id="' . self::$messageId . '">' . $message . '</p>
+						</div>
 						<label for="' . self::$name . '">Username :</label>
 						<input type="text" id="' . self::$name . '" name="' . self::$name . '" value="' . $this->getUsernameToDisplay()  .'" />
 						<label for="' . self::$password . '">Password :</label>
@@ -95,7 +88,6 @@ class LoginView{
 				</form>
 			</div>
 		';
-
 	}
 
 	//Get user input for username
@@ -233,6 +225,10 @@ class LoginView{
 		header('Location: /Project-inlog/index.php' );
 	}
 
+	//TODO Is this correct??
+	public function reloadFailPage(){
+		header('Location: /Project-inlog/index.php?action=LoginUser' );
+	}
 
     //Set message to show user
 	public function setMessage($message){

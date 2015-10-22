@@ -9,16 +9,15 @@ class UserModel{
 
     private $username;
     private $password;
-    private $userRepositoryDAL;
-    private $database;
+    private $userRepository;
 
     public function __construct($username, $password){
-        /**if(strlen($username) < 3){
+        if(strlen($username) < 3){
             throw new UsernameTooShortException();
         }
         if(strlen($password) < 6){
             throw new PasswordTooShort();
-        }*/
+        }
 
         $this->userRepository = new \model\dal\UserRepository();
         $this->username = $username;
@@ -57,5 +56,9 @@ class UserModel{
 
     public function getPassword(){
         return $this->password;
+    }
+
+    public function getUserByUsername($username){
+        return $this->userRepository->getUserByUsername($username);
     }
 }

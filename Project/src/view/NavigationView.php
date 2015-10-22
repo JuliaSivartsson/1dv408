@@ -7,6 +7,7 @@ class NavigationView
 {
     const ViewAllProducts = "ViewAllProducts";
     const RemoveItemFromBasket = "RemoveItemFromBasket";
+    const RemoveOneItemFromBasket = "RemoveOneItemFromBasket";
     const ViewProduct = "ViewProduct";
     const LoginUser = "LoginUser";
     const AddProductToBasket = "AddProductToBasket";
@@ -42,6 +43,10 @@ class NavigationView
 
     public function getRemoveItemFromBasket($extra, $title){
         return '<a href="?' . self::$action . '=' . self::RemoveItemFromBasket . '&' . $extra . '">' . $title . '</a>';
+    }
+
+    public function getRemoveOneItemFromBasket($extra, $title){
+        return '<a href="?' . self::$action . '=' . self::RemoveOneItemFromBasket . '&' . $extra . '">' . $title . '</a>';
     }
 
     public function getViewCheckoutLink($title){

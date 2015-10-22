@@ -65,20 +65,43 @@ class ProductBasketDAL
         file_put_contents(self::$persistentBasketFile, '');
     }
 
-    public function removeLineFromFile($lineToRemove){
+    public function removeOneLineFromFile($lineToRemove){
         assert(is_string($lineToRemove));
 
         $lines = file(self::$persistentBasketFile, FILE_IGNORE_NEW_LINES);
 
         $remove = $lineToRemove;
-        foreach($lines as $key => $line)
-            if(stristr($line, $remove)) unset($lines[$key]);
+
+        //Remove one item from file
+        foreach($lines as $key => $line){
+            if(stristr($line, $remove)){
+                unset($lines[$key]);
+                break;
+            }
+        }
 
         $data = implode(array_values($lines), "\n");
-
         $file = fopen(self::$persistentBasketFile, 'w');
         fwrite($file, $data);
         fclose($file);
     }
+
+    public function removeLinesFromFile($lineToRemove){
+        assert(is_string($lineToRemove));
+
+        $lines = file(self::$persistentBasketFile, FILE_IGNORE_NEW_LINES);
+
+        $remove = $lineToRemove;
+
+        //Remove all items of one kind from file
+        foreach($lines as $key => $line)
+            if(stristr($line, $remove)) unset($lines[$key]);
+
+        $data = implode(array_values($lines), "\n");
+        $file = fopen(self::$persistentBasketFile, 'w');
+        fwrite($file, $data);
+        fclose($file);
+    }
+
 
 }

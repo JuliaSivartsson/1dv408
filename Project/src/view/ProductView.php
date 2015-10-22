@@ -8,14 +8,12 @@
 
 namespace view;
 
-
-use common\Messages;
 use model\dal\CustomerRepository;
 use model\dal\OrderItemRepository;
+use model\dal\ProductRepository;
 
 class ProductView
 {
-
     private $productRepository;
     private $orderRepository;
     private $orderItemRepository;
@@ -31,11 +29,8 @@ class ProductView
     private static $cookieProductId = 'LoginView::CookieProductId';
     private static $cookieProduct = 'LoginView::CookieProduct';
 
-    private static $removeFromBasket = "ProductView::RemoveFromBasket";
     private static $messageId = "MemberView::MessageId";
     private static $addProductToBasket = "ProductView::AddToBasket";
-    private static $flashLocation = 'ProductView::FlashMessage';
-
     private static $checkoutSSN = 'ProductView:CheckoutSSN';
     private static $checkoutFirstName = 'ProductView:CheckoutFirstName';
     private static $checkoutLastName = 'ProductView:CheckoutLastName';
@@ -47,7 +42,7 @@ class ProductView
 
     private static $ProductPosition = "product";
 
-    public function __construct(\model\dal\ProductRepository $repo, NavigationView $navView){
+    public function __construct(ProductRepository $repo, NavigationView $navView){
         $this->productRepository = $repo;
         $this->navView = $navView;
         $this->loginModel = new \model\LoginModel();
@@ -68,7 +63,7 @@ class ProductView
         $limit      = ( isset( $_GET['limit'] ) ) ? $_GET['limit'] : 4;
         $page       = ( isset( $_GET['page'] ) ) ? $_GET['page'] : 1;
         $links      = ( isset( $_GET['links'] ) ) ? $_GET['links'] : 3;
-        $paginator = new \common\Paginator();
+        $paginationLinks = new \common\PaginationLinks();
 
 
         $paginationResults = $this->productRepository->getProductsPagination($page, $limit);
@@ -80,7 +75,7 @@ class ProductView
         $ret .= '<h1>Welcome</h1>';
         $ret .= '<h3>All products</h3>';
         $ret .= '<p id="' . self::$messageId . '">' . $message . '</p>';
-        $ret .= '<div class="pagination-links">'. $paginator->createLinks($page, $limit, $totalRows, $links, 'pagination pagination-sm').'</div>';
+        $ret .= '<div class="pagination-links">'. $paginationLinks->createLinks($page, $limit, $totalRows, $links, 'pagination pagination-sm').'</div>';
         $ret .= '<div class="row">';
 
         foreach($paginationResults->data as $product) {
@@ -116,9 +111,14 @@ class ProductView
         $ret .= '<h1>'.$productToShow->getName().'</h1>';
         $ret .= '<p>'.$productToShow->getImage($productToShow->getId()).'</p>';
         $ret .= '<p>Price: $' . $productToShow->getPrice(). '</p>';
-        $ret .= '<p>' . $productToShow->getQuantity(). ' in store</p>';
+        if($productToShow->getQuantity() == 0){
+            $ret .= '<p class="alert alert-danger">Not in stock.</p>';
+        }
+        else{
+            $ret .= '<p>' . $productToShow->getQuantity(). ' in store</p>';
+        }
         $ret .= '<div class="description"><p>' . $productToShow->getDescription(). '</p></div>';
-        if($this->loginView->isLoggedIn() === true) {
+        if($this->loginView->isLoggedIn() === true && $productToShow->getQuantity() != 0) {
             $ret .= '
             <form method="post">
                 <input id="submit" class="btn btn-primary" type="submit" name="' . self::$addProductToBasket . '"  value="Add to basket" />
@@ -129,6 +129,15 @@ class ProductView
     }
 
     public function viewBasket(){
+
+        $successMessage = $this->message;
+        if($successMessage != ""){
+            $successMessageContainer = '<div class="checkoutMessage"><p class="alert alert-success" id="' . self::$messageId . '">' . $successMessage . '</p></div>';
+        }
+        else{
+            $successMessageContainer = "";
+        }
+
         if($basket = $this->persistentBasketDAL->load() === false){
             $ret = '<div class="jumbotron">';
             $ret .= '<p>You have no products in your basket yet!</p>';
@@ -143,23 +152,16 @@ class ProductView
             $totalPrice = 0;
 
             foreach ($pieces as $productInBasket) {
-
                 if ($productInBasket != "") {
-
-
-                    if(in_array($productInBasket, $objectsToShow)) {
-                    }
-                    else{
-
+                    if(!in_array($productInBasket, $objectsToShow)) {
                         array_push($objectsToShow, $productInBasket);
                     }
-
                     array_push($allObjectsInCookie, $productInBasket);
-
                 }
             }
 
             $ret = '<div class="jumbotron">';
+            $ret .= $successMessageContainer;
             $ret .= '<p>Products in your basket:</p>';
             $ret .= '<table class="table">';
             $ret .= '<tr>';
@@ -179,6 +181,7 @@ class ProductView
                 $ret .= '<td><h3>'. $getObjectFromName->getImage($getObjectFromName->getId(), 50) .' '.  $this->getViewLinkFromBasket($getObjectFromName) . PHP_EOL .'</h3>';
                 $ret .= '<td>$'. $getObjectFromName->getPrice() .'</td>';
                 $ret .= '<td>'. $quantity .'</td>';
+                $ret .= '<td>' . $this->removeOneItemFromBasketLink($getObjectFromName) . PHP_EOL .'</td>';
                 $ret .= '<td>' . $this->removeItemFromBasketLink($getObjectFromName) . PHP_EOL .'</td>';
                 $ret .= '</tr>';
             }
@@ -202,10 +205,9 @@ class ProductView
             $ret .= '<p>You have no products in your basket yet!</p>';
             $ret .= '</div>';
         }
+
         else {
-
             $objectsToShow = array();
-
             $pieces = $this->getProductsFromCookie();
             $allObjectsInCookie = array();
             $totalPrice = 0;
@@ -213,9 +215,7 @@ class ProductView
             //Loop through all the products in basket and place one of each in an array, and all the products (even duplicates) in another array.
             foreach ($pieces as $productInBasket) {
                 if ($productInBasket != "") {
-                    if(in_array($productInBasket, $objectsToShow)) {
-                    }
-                    else{
+                    if(!in_array($productInBasket, $objectsToShow)) {
                         array_push($objectsToShow, $productInBasket);
                     }
                     array_push($allObjectsInCookie, $productInBasket);
@@ -312,21 +312,18 @@ class ProductView
         $order = $this->orderRepository->getLatestOrderByCustomerId($customer->getId());
         $orderItems = $this->orderItemRepository->getAllOrderItemsWithOrderId($order->getId());
 
-
         $products = array();
         $allBoughtItems = array();
+        $message = $this->message;
+        $totalPrice = 0;
+
         foreach($orderItems as $item){
             $productName = $this->productRepository->getProductById($item->getProductId());
-            if(in_array($productName, $products)) {
-            }
-            else{
+            if(!in_array($productName, $products)) {
                 array_push($products, $productName);
             }
             array_push($allBoughtItems, $productName->getName());
         }
-
-        $message = $this->message;
-        $totalPrice = 0;
 
         $ret = '<div class="jumbotron">';
         $ret .= '<p id="' . self::$messageId . '">' . $message . '</p>';
@@ -357,9 +354,6 @@ class ProductView
             $ret .= '<td>$'. $product->getPrice() .'</td>';
             $ret .= '<td>'. $quantity .'</td>';
             $ret .= '</tr>';
-
-            $newQuantity = $product->getQuantity() - $quantity;
-            $this->productRepository->reduceQuantity($product->getId(), $newQuantity);
         }
         $ret .= '</table>';
         $ret .= '<h2>Total: $'. $totalPrice .'</h2>';
@@ -368,15 +362,14 @@ class ProductView
     }
 
     public function getAllOrderItems(){
-        $basket = $this->basket();
-
+        //Load basket file
+        $basket = $this->persistentBasketDAL->load();
         $products = array();
         $pieces = explode("\n", $basket);
 
+        //Add item to array if it doesn't already exists in array
         foreach($pieces as $item){
-            if(in_array($item, $products)) {
-            }
-            else{
+            if(!in_array($item, $products)) {
                 array_push($products, $item);
             }
         }
@@ -387,11 +380,9 @@ class ProductView
                 if(substr_count($basket,$item) > $productName->getQuantity()){
                     return false;
                 }
-                else{
-                    return true;
-                }
             }
         }
+        return true;
     }
 
     public function wantToPurchase() {
@@ -447,35 +438,16 @@ class ProductView
     public function getProductsToOrder(){
         $itemsInBasket = $this->getProductsFromCookie();
 
+
         $getObjectFromName = Array();
         foreach ($itemsInBasket as $productInBasket) {
 
             if ($productInBasket != "") {
+
                 array_push($getObjectFromName, $this->productRepository->getProductByName($productInBasket));
             }
         }
         return $getObjectFromName;
-    }
-
-    public function getCustomerInformation(){
-        return $this->validateOrder($this->getCheckoutSSN(), $this->getCheckoutFirstName(), $this->getCheckoutLastName(), $this->getCheckoutEmail());
-    }
-
-    public function validateOrder($ssn, $firstName, $lastName, $email){
-        try{
-            $customer = new \model\CustomerModel($ssn, $firstName, $lastName, $email);
-            return $customer;
-        }catch(\model\InvalidSSNException $e){
-            $this->message = "Social security number must be in correct format (xxxxxxxx-xxxx)";
-        }catch(\model\InvalidFirstNameException $e){
-            $this->message = "Firstname must be atleast 3 characters long and only contain valid characters.";
-        }catch(\model\InvalidLastNameException $e){
-            $this->message = "Lastname must be atleast 3 characters long and only contain valid characters.";
-        }catch(\model\InvalidEmailException $e){
-            $this->message = "Email must be a valid email address";
-        }
-
-        return false;
     }
 
     public function getProductsFromCookie(){
@@ -484,19 +456,10 @@ class ProductView
         return $pieces;
     }
 
-    public function basket(){
-        $basket = $this->persistentBasketDAL->load();
-        return $basket;
-    }
-
     public function wantsToAddProductToBasket(){
         if(isset($_POST[self::$addProductToBasket])){
             return $_POST[self::$addProductToBasket];
         }
-    }
-
-    public function removeItemFromBasket(){
-        return isset($_POST[self::$removeFromBasket]);
     }
 
     public function getItemToRemoveFromBasket(){
@@ -505,18 +468,20 @@ class ProductView
         return $productToAdd;
     }
 
-
     private function getViewCheckoutLink(){
         return $this->navView->getViewCheckoutLink("Checkout");
     }
-
 
     public function getPurchaseProductsLink(){
             return $this->navView->getPurchaseProductsLink("Confirm");
     }
 
+    private function removeOneItemFromBasketLink(\model\ProductModel $product){
+        return $this->navView->getRemoveOneItemFromBasket(self::$ProductPosition . '=' . $product->GetID(), "<i class='fa fa-times'></i>");
+    }
+
     private function removeItemFromBasketLink(\model\ProductModel $product){
-        return $this->navView->getRemoveItemFromBasket(self::$ProductPosition . '=' . $product->GetID(), "<i class='fa fa-times'></i>");
+        return $this->navView->getRemoveItemFromBasket(self::$ProductPosition . '=' . $product->GetID(), "Remove all");
     }
 
     private function getViewLinkFromBasket(\model\ProductModel $product){
@@ -527,12 +492,6 @@ class ProductView
         return $this->navView->getViewProductLink(self::$ProductPosition . '=' . $product->GetID(), "Visa " . $product->getName()) . ' ';
     }
 
-    public function getProductToAdd(){
-        $id = $_GET['product'];
-        $productToAdd = $this->productRepository->getProductById($id);
-        return $productToAdd;
-    }
-
     public function rememberBasketForUser(){
         $id = $_GET['product'];
         $productToSave = $this->productRepository->getProductById($id);
@@ -540,7 +499,6 @@ class ProductView
         $this->expirationDate = time() + (86400 * 30);
 
         //Save cookie for name and password
-        //$this->cookie->save(self::$cookieName, $this->userModel->getUsername(), $this->expirationDate);
         $this->cookie->save(self::$cookieProductId, $id, $this->expirationDate);
         $this->cookie->save(self::$cookieProduct, $productToSave->getName(), $this->expirationDate);
 
@@ -553,34 +511,19 @@ class ProductView
         $this->cookie->delete(self::$cookieProductId);
     }
 
-
-
-    public function reloadPage(){
-        header('Location: /Project/index.php' );
-    }
-
     //Set message to show user
     public function setMessage($message){
         assert(is_string($message));
         return $this->message = $message;
     }
 
+    public function getMessage(){
+        return $this->message;
+    }
+
     //Set message to show user
     public function setSuccessMessage($message){
         assert(is_string($message));
         return $this->successMessage = $message;
-    }
-
-    public function getFlashMessage()
-    {
-        if ($this->cookie->isCookieSet(self::$flashLocation)) {
-            $this->message = $this->cookie->load(self::$flashLocation);
-            $this->cookie->delete(self::$flashLocation);
-        }
-    }
-
-    public function setFlashMessage($message) {
-        assert(is_string($message), "ProductView::setMessage needs a string as argument");
-        $this->cookie->save(self::$flashLocation, $message, time() + 3600);
     }
 }
