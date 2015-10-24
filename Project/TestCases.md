@@ -73,7 +73,36 @@ If user is not logged in, no button is shown for adding product to basket
 * 1.1 No button for 'Checkout' is shown
 
 ##Test case 1.8 - Remove one product from basket##
+###Pre condition###
+* User has one item in basket
+
+####Input####
+* User presses the 'x' in the table next to the product he/she wants to remove
+
+###Output###
+* Text 'You have no products in your basket yet!' is shown
+
+###Alternate Scenarios###
+1. User has two of one kind of product in basket - quantity 2 is shown
+* 1.1 After pressing 'x' quantity 1 is shown
+* 1.2 Message 'Removed one item from basket.' is shown
+
 ##Test case 1.9 - Remove all products of one kind from basket##
+###Pre condition###
+* User has more than one typ of item in basket
+
+####Input####
+* User presses the 'Remove all' text in the table next to the product he/she wants to remove
+
+###Output###
+* Message 'Removed all items of this kind in basket.' is shown
+* Product that user pressed link on is removed from basket and only the othr product is shown
+
+###Alternate Scenarios###
+1. User has only one kind of product in basket - quantity 2 is shown
+* 1.1 After pressing 'Remove all' all products of that kind is removed from basket
+* 1.2 Text 'You have no products in your basket yet!' is shown
+
 ##Test case 1.8 - View checkout##
 
 ##Test case 2.1 - Order products##
