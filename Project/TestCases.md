@@ -158,3 +158,14 @@ If user is not logged in, no button is shown for adding product to basket
 * 1.c Message 'Email must be a valid email address' is shown
 
 ##Test case 2.2 - View receipt##
+###Pre condition###
+* User has successfully created a new order
+
+###Input###
+* User presses 'View receipt' link
+
+###Output###
+* Information about order is shown with customer information, orderid and orderitems.
+* Information about payment is shown
+* 'You should also have received a confirmation on your email about your order.' is shown (this is not impleented yet)
+* Total price is shown
