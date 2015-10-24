@@ -51,9 +51,9 @@ If user is not logged in, no button is shown for adding product to basket
 * Message "This product has been added to your basket." is shown
 
 ###Alternate Scenarios###
-1. The quantity of the product is 0.
-* 1.1 No button is shown
-* 1.2 'Not in stock' text is shown
+1.1 The quantity of the product is 0.
+* 1.a No button is shown
+* 1.b 'Not in stock' text is shown
 
 ##Test case 1.7 - View basket##
 ###Pre condition###
