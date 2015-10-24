@@ -71,8 +71,10 @@ If user is not logged in, no button is shown for adding product to basket
 ####Alternate Scenarios###
 1. If user has no products in basket the text 'You have no products in your basket yet!' is shown
 * 1.1 No button for 'Checkout' is shown
-* 
+
+##Test case 1.8 - Remove one product from basket##
+##Test case 1.9 - Remove all products of one kind from basket##
 ##Test case 1.8 - View checkout##
 
-##Test case 1.9 - Order products##
+##Test case 2.1 - Order products##
 
