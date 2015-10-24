@@ -83,9 +83,9 @@ If user is not logged in, no button is shown for adding product to basket
 * Text 'You have no products in your basket yet!' is shown
 
 ###Alternate Scenarios###
-1. User has two of one kind of product in basket - quantity 2 is shown
-* 1.1 After pressing 'x' quantity 1 is shown
-* 1.2 Message 'Removed one item from basket.' is shown
+1.1 User has two of one kind of product in basket - quantity 2 is shown
+* 1.a After pressing 'x' quantity 1 is shown
+* 1.b Message 'Removed one item from basket.' is shown
 
 ##Test case 1.9 - Remove all products of one kind from basket##
 ###Pre condition###
@@ -99,11 +99,62 @@ If user is not logged in, no button is shown for adding product to basket
 * Product that user pressed link on is removed from basket and only the othr product is shown
 
 ###Alternate Scenarios###
-1. User has only one kind of product in basket - quantity 2 is shown
-* 1.1 After pressing 'Remove all' all products of that kind is removed from basket
-* 1.2 Text 'You have no products in your basket yet!' is shown
+1.1 User has only one kind of product in basket - quantity 2 is shown
+* 1.a After pressing 'Remove all' all products of that kind is removed from basket
+* 1.b Text 'You have no products in your basket yet!' is shown
 
 ##Test case 1.8 - View checkout##
+###Pre condition###
+* User has atleast one item in basket
+
+###Input###
+* User presses 'Checkout' button
+
+###Output###
+* Table with all products in basket is shown
+* Form for customer information is shown
+* Information about payment and order is shown
 
 ##Test case 2.1 - Order products##
 
+###Input###
+* User fills in ssn, firstname, lastname and email correctly
+* User presses 'Confirm order' button
+
+###Output###
+* 'All products' page is shown
+* Message 'Thank you for your order!' is shown
+* Link to 'View receipt' is shown
+
+* New customer is created in database
+* New order is created in database
+* New orderitems are created in database
+* Basket items are removed
+
+###Alternate Scenarios###
+1.1 User has more products of one kind in basket than exists in database
+* 1.a User presses 'Confirm order' button
+* 1.b 'view checkout' page is shown again
+* 1.c Message 'Something went wrong! Make sure the quantity of your ordered objects exists.' is shown
+ 
+1.2 User fills in wrong format in social security number field
+* 1.a User presses 'Confirm order' button
+* 1.b 'view checkout' page is shown again
+* 1.c Message 'Social security number must be in correct format (xxxxxxxx-xxxx)' is shown
+
+1.3 User leaves firstname field empty
+* 1.a User presses 'Confirm order' button
+* 1.b 'view checkout' page is shown again
+* 1.c Message 'Firstname must be atleast 3 characters long and only contain valid characters.' is shown
+
+1.4 User leaves lastname field empty
+* 1.a User presses 'Confirm order' button
+* 1.b 'view checkout' page is shown again
+* 1.c Message 'Lastname must be atleast 3 characters long and only contain valid characters.' is shown
+
+1.5 User fills in wrong format in email field
+* 1.a User presses 'Confirm order' button
+* 1.b 'view checkout' page is shown again
+* 1.c Message 'Email must be a valid email address' is shown
+
+##Test case 2.2 - View receipt##
