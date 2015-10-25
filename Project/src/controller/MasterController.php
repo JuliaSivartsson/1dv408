@@ -9,48 +9,43 @@
 namespace controller;
 
 use common\Messages;
+use model\dal\ProductBasketDAL;
+use model\LoginModel;
+use model\ProductBasketModel;
+use view\DefaultView;
+use view\NavigationView;
+use view\ProductView;
+use view\RegisterView;
 
 
 class MasterController
 {
     private $registrationController;
     private $loginController;
+    private $productController;
 
     private $defaultView;
     private $registerView;
     private $loginView;
     private $navView;
     private $productView;
-    private $productBasketView;
-    private $productController;
 
     private $productBasketModel;
     private $loginModel;
-
-    private $productRepository;
-    private $customerRepository;
-    private $orderItemRepository;
-    private $orderRepository;
-
     private $persistentBasketDAL;
 
     public function __construct(){
-        $this->loginModel = new \model\LoginModel();
-        $this->productRepository = new \model\dal\ProductRepository();
-        $this->productBasketModel = new \model\ProductBasketModel();
-        $this->orderItemRepository = new \model\dal\OrderItemRepository();
-        $this->orderRepository = new \model\dal\OrderRepository();
-        $this->customerRepository = new \model\dal\CustomerRepository();
-        $this->productController = new \controller\ProductController();
+        $this->loginModel = new LoginModel();
+        $this->productBasketModel = new ProductBasketModel();
+        $this->persistentBasketDAL = new ProductBasketDAL();
 
-        $this->defaultView = new \view\DefaultView();
-        $this->navView = new \view\NavigationView();
-        $this->productBasketView = new \view\ProductBasketView();
-        $this->registerView = new \view\RegisterView();
-        $this->productView = new \view\ProductView($this->productRepository, $this->navView);
+        $this->defaultView = new DefaultView();
+        $this->navView = new NavigationView();
+        $this->registerView = new RegisterView();
+        $this->productView = new ProductView($this->navView);
 
-        $this->persistentBasketDAL = new \model\dal\ProductBasketDAL();
-        $this->registrationController = new \controller\RegistrationController($this->registerView, $this->defaultView);
+        $this->productController = new ProductController();
+        $this->registrationController = new RegistrationController($this->registerView, $this->defaultView);
 
     }
 
@@ -79,8 +74,6 @@ class MasterController
             if ($this->loginView->isUserComingBack()) {
                 $this->productView->setMessage(Messages::$userReturning);
             }
-
-
         }
 
         //If user wants to buy products
@@ -92,6 +85,7 @@ class MasterController
                 $this->productView->setMessage($purchase);
             }else if(is_object($purchase)) {
                 $this->productView->setSuccessMessage(Messages::$orderComplete . " " . $this->navView->getViewReceiptLink('Customer=' . $purchase->getId(), 'View receipt'));
+                return $this->productView->viewAllProducts();
             }
         }
 
@@ -108,7 +102,10 @@ class MasterController
 
         //If user wants to register
         if($this->registerView->registerAttempt()){
-            $this->registrationController->doRegister();
+            if($this->registrationController->doRegister()){
+                $this->loginView->reloadLoginPage();
+                $this->loginView->setFlashSuccessMessage(Messages::$successfulRegistration);
+            }
         }
 
         return $this->runAction();

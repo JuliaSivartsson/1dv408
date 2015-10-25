@@ -77,13 +77,4 @@ class CustomerModel
     public function getEmail(){
         return $this->email;
     }
-
-    public function saveNewCustomerInRepository(CustomerModel $customer){
-        $this->customerRepository->save($customer);
-    }
-
-    public function getCustomerBySsn($ssn){
-        return $this->customerRepository->getCustomerBySsn($ssn);
-    }
-
 }

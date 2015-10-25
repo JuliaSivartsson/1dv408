@@ -17,6 +17,7 @@ class NavigationView
     const PurchaseProducts = "PurchaseProducts";
     const ViewReceipt = "ViewReceipt";
     private static $action = "action";
+
     public function getAction(){
         if(isset($_GET[self::$action])){
             return $_GET[self::$action];

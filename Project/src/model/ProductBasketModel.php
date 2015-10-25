@@ -13,7 +13,6 @@ class ProductBasketModel
 {
 
     private static $nameLocation = "Basket::username";
-    private static $passwordLocation = "Basket::product";
 
     private $hashedPassword;
     private $sessionStorage;
@@ -21,9 +20,6 @@ class ProductBasketModel
     private static $userID = "User::userIdentifier";
 
     public function __construct(){
-        //Encrypt the password
-        //$this->hashedPassword = crypt($this->generateToken(), sha1($this->variableToCrypt));
-
         $this->persistentBasketDAL = new \model\dal\ProductBasketDAL();
         $this->sessionStorage = new \common\SessionStorage();
         $this->cookieStorage =  new \common\CookieStorage();

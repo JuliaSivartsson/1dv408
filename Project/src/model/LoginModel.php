@@ -4,8 +4,6 @@ namespace model;
 use common\CookieStorage;
 use common\SessionStorage;
 
-require_once('dal/PersistentLoginDAL.php');
-
 class LoginModel{
     private static $nameLocation = "User::name";
     private static $passwordLocation = "Password::name";
@@ -20,7 +18,7 @@ class LoginModel{
         //Encrypt the password
         $this->hashedPassword = crypt($this->generateToken(), sha1($this->variableToCrypt));
 
-        $this->persistentLoginDAL = new PersistentLoginDAL();
+        $this->persistentLoginDAL = new dal\PersistentLoginDAL();
         $this->sessionStorage = new SessionStorage();
         $this->cookieStorage =  new CookieStorage();
     }

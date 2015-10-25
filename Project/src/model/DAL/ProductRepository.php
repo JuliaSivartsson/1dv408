@@ -38,7 +38,7 @@ class ProductRepository{
         return $ret;
     }
 
-    public function getProductsPagination($page = 1, $limit = 4){
+    public function getProductsPagination($page, $limit){
 
         $this->query = "SELECT * FROM  $this->dbTable ORDER BY ". self::$NameColumn ."";
         //$stmt->execute();

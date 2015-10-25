@@ -14,13 +14,6 @@ class RegisterView {
 
     private $message;
 
-    /**
-     * Create HTTP response
-     *
-     * Should be called after a login attempt has been determined
-     *
-     * @return  void BUT writes to standard output and cookies!
-     */
     public function response() {
         $message = $this->message;
 
@@ -29,6 +22,13 @@ class RegisterView {
 
     private function generateRegistrationFormHTML($message){
 
+        if($message != ""){
+            $messageContainer = '<div class="checkoutMessage "><p class="alert alert-danger" id="' . self::$messageId . '">' . $message . '</p></div>';
+        }
+        else{
+            $messageContainer = '<p" id="' . self::$messageId . '">' . $message . '</p>';
+        }
+
     return "
             <div class='jumbotron'>
                 <h2>Register new user</h2>
@@ -36,7 +36,7 @@ class RegisterView {
                     <fieldset>
                     <legend>Register a new user - Write username and password</legend>
                       <div class='normal-font'>
-                        <p id='" . self::$messageId . "'>" . $message ."</p>
+                        $messageContainer
                       </div>
                       <div class='form-group'>
                       <label for='" . self::$username . "' >Username :</label>
@@ -90,11 +90,11 @@ class RegisterView {
 
         if(strlen($this->getRegisterUsername()) < 3){
 
-            $message .= Messages::$usernameTooShort . "<br>";
+            $message .= Messages::$usernameIsNotCorrect . "<br>";
             $canIRegisterNewUser = false;
         }
         if(strlen($this->getRegisterPassword()) < 6){
-            $message .= Messages::$passwordTooShort;
+            $message .= Messages::$passwordIsNotCorrect;
             $canIRegisterNewUser = false;
         }
         if($this->getRegisterPassword() !== $_POST[self::$passwordRepeat]){
@@ -125,4 +125,6 @@ class RegisterView {
         assert(is_string($message));
         return $this->message = $message;
     }
+
+
 }

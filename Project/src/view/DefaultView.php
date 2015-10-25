@@ -22,8 +22,6 @@ class DefaultView
             $this->separationMark = "";
         }
 
-        //$this->renderIsLoggedIn($isLoggedIn) .
-
         echo '
             <!DOCTYPE html>
             <html lang="sv">
@@ -61,10 +59,6 @@ class DefaultView
 		';
     }
 
-    /*public function UserWantsToLogin(){
-        return isset($_GET[self::$loginUser]);
-    }*/
-
     private function renderIsLoggedIn($isLoggedIn)
     {
         if ($isLoggedIn) {
@@ -77,9 +71,7 @@ class DefaultView
     private function renderRegisterLink($isLoggedIn){
         $this->navView = new \view\NavigationView();
         if($isLoggedIn === false){
-            //return "<a href='?" . self::$registerUser . "'>Register a new user</a>";
             return $this->navView->GetRegisterUserLink("Register a new user");
-
         }
         else{
             return null;
@@ -90,7 +82,6 @@ class DefaultView
         $this->navView = new \view\NavigationView();
         if($isLoggedIn === false){
             return $this->navView->GetLoginUserLink("Login");
-
         }
         else{
             return null;

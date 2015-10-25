@@ -1,6 +1,6 @@
 <?php
 
-namespace model;
+namespace model\dal;
 
 //Class for saving cookies on file
 class PersistentLoginDAL

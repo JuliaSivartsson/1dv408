@@ -1,5 +1,5 @@
 <?php
-
+/*
 namespace view;
 
 class LayoutView
@@ -10,7 +10,7 @@ class LayoutView
    * @param $isLoggedIn
    * @param LoginView $loginView
    */
-  public function render($isLoggedIn, IView $view)
+  /*public function render($isLoggedIn, IView $view)
   {
 
     echo '<!DOCTYPE html>
@@ -37,7 +37,7 @@ class LayoutView
    * @param $isLoggedIn
    * @return string
    */
-  private function renderIsLoggedIn($isLoggedIn)
+ /*private function renderIsLoggedIn($isLoggedIn)
   {
     if ($isLoggedIn) {
       return '<h2>Logged in</h2>';
@@ -66,7 +66,7 @@ class LayoutView
   /**
    * @return string
    */
-  public function showDateTime()
+  /*public function showDateTime()
   {
     date_default_timezone_set('Europe/Stockholm');
 
@@ -75,4 +75,4 @@ class LayoutView
     return $timeString;
   }
 
-}
+}*/

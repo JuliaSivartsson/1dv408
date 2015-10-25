@@ -11,34 +11,27 @@ namespace controller;
 
 use common\Messages;
 use model\CustomerModel;
+use model\dal\ProductBasketDAL;
 use model\OrderItemModel;
 use model\OrderModel;
+use view\DefaultView;
+use view\NavigationView;
+use view\ProductView;
 
 class ProductController
 {
+    private $persistentBasketDAL;
+
     private $defaultView;
     private $navView;
     private $productView;
-    private $productBasketView;
-    private $productRepository;
-    private $customerRepository;
-    private $orderItemRepository;
-    private $orderRepository;
-
-    private $persistentBasketDAL;
 
     public function __construct(){
-        $this->productRepository = new \model\dal\ProductRepository();
-        $this->orderItemRepository = new \model\dal\OrderItemRepository();
-        $this->orderRepository = new \model\dal\OrderRepository();
-        $this->customerRepository = new \model\dal\CustomerRepository();
+        $this->persistentBasketDAL = new ProductBasketDAL();
 
-        $this->defaultView = new \view\DefaultView();
-        $this->navView = new \view\NavigationView();
-        $this->productBasketView = new \view\ProductBasketView();
-        $this->productView = new \view\ProductView($this->productRepository, $this->navView);
-
-        $this->persistentBasketDAL = new \model\dal\ProductBasketDAL();
+        $this->defaultView = new DefaultView();
+        $this->navView = new NavigationView();
+        $this->productView = new ProductView($this->navView);
     }
 
     public function purchaseProducts(){
@@ -49,23 +42,23 @@ class ProductController
             try{
                 $newCustomer = new \model\CustomerModel($this->productView->getCheckoutSSN(), $this->productView->getCheckoutFirstName(), $this->productView->getCheckoutLastName(), $this->productView->getCheckoutEmail());
             }catch(\model\InvalidSSNException $e){
-                return "Social security number must be in correct format (xxxxxxxx-xxxx)";
+                return Messages::$wrongSsn;
             }catch(\model\InvalidFirstNameException $e){
-                return "Firstname must be atleast 3 characters long and only contain valid characters.";
+                return Messages::$wrongFirstName;
             }catch(\model\InvalidLastNameException $e){
-                return "Lastname must be atleast 3 characters long and only contain valid characters.";
+                return Messages::$wrongLastName;
             }catch(\model\InvalidEmailException $e){
-                return "Email must be a valid email address";
+                return Messages::$wrongEmail;
             }
 
             if ($newCustomer == true) {
-                $this->customerRepository->save($newCustomer);
-                $customer = $this->customerRepository->getCustomerBySsn($newCustomer->getSSN());
+                $newCustomer->saveNewCustomerInRepository($newCustomer);
+                $customer = $newCustomer->getCustomerBySsn($newCustomer->getSSN());
 
                 //create order on that customer
                 $order = new OrderModel($customer->getId());
-                $this->orderRepository->save($order);
-                $getOrder = $this->orderRepository->getLatestOrderByCustomerId($customer->getId());
+                $order->saveNewOrderInRepository($order);
+                $getOrder = $order->getLatestOrderByCustomerId($customer->getId());
 
 
                 $products = $this->productView->getProductsToOrder();
@@ -74,7 +67,7 @@ class ProductController
 
                     $orderItemInModel = new OrderItemModel($getOrder->getId(), $orderItem->getId());
 
-                    $this->orderItemRepository->save($orderItemInModel);
+                    $orderItemInModel->saveNewOrderItemInRepository($orderItemInModel);
                     $getOrderItem = $this->productRepository->getProductById($orderItemInModel->getProductId());
 
                     //Reduce quantity on that product
@@ -85,25 +78,14 @@ class ProductController
                 $this->productView->forgetBasket();
                 $this->persistentBasketDAL->clearBasket();
 
-                //$this->productView->setSuccessMessage(Messages::$orderComplete . " " . $this->navView->getViewReceiptLink('Customer=' . $customer->getId(), 'View receipt'));
                 return $customer;
             }
 
-            //$newCustomer = $this->validateOrder($this->productView->getCheckoutSSN(), $this->productView->getCheckoutFirstName(), $this->productView->getCheckoutLastName(), $this->productView->getCheckoutEmail());
+            // TODO send email!
+            //$customerEmail = $customer->getEmail();
+            //$administratorEmail = \Settings::ADMIN_EMAIL;
 
-            //If we create a new customer
-
-                //$customerEmail = $customer->getEmail();
-                //$administratorEmail = \Settings::ADMIN_EMAIL;
-
-                // TODO send email!
-                //$this->sendCustomerEmail($customer, $getOrder);
-
-/*
-            } else {
-                return $this->productView->setMessage('fel');
-                //return $this->productView->viewCheckout();
-            }*/
+            //$this->sendCustomerEmail($customer, $getOrder);
         }
         else{
             $this->productView->setMessage(Messages::$orderCouldNotBeCreated);
@@ -131,8 +113,6 @@ class ProductController
     private function sendCustomerEmail(CustomerModel $customer, OrderModel $order){
 
         $orderId = $order->getId();
-        var_dump($order->getId());
-        var_dump($customer->getEmail());
 
         $to      = $customer->getEmail();
         $subject = 'Your order!';

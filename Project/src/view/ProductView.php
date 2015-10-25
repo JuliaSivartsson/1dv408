@@ -8,16 +8,21 @@
 
 namespace view;
 
-use model\dal\CustomerRepository;
-use model\dal\OrderItemRepository;
-use model\dal\ProductRepository;
+use common\CookieStorage;
+use model\dal\ProductBasketDAL;
+use model\LoginModel;
+use model\ProductCatalog;
+use model\CustomerCatalog;
+use model\OrderCatalog;
+use model\OrderItemCatalog;
 
 class ProductView
 {
-    private $productRepository;
-    private $orderRepository;
-    private $orderItemRepository;
-    private $customerRepository;
+
+    private $productCatalog;
+    private $customerCatalog;
+    private $orderItemCatalog;
+    private $orderCatalog;
 
     private $navView;
     private $cookie;
@@ -42,23 +47,29 @@ class ProductView
 
     private static $ProductPosition = "product";
 
-    public function __construct(ProductRepository $repo, NavigationView $navView){
-        $this->productRepository = $repo;
+    public function __construct(NavigationView $navView){
+        $this->productCatalog = new ProductCatalog();
+        $this->customerCatalog = new CustomerCatalog();
+        $this->orderItemCatalog = new OrderItemCatalog();
+        $this->orderCatalog = new OrderCatalog();
+
         $this->navView = $navView;
-        $this->loginModel = new \model\LoginModel();
-        $this->loginView = new \view\LoginView($this->loginModel);
-        $this->persistentBasketDAL = new \model\dal\ProductBasketDAL();
-
-        $this->orderRepository = new \model\dal\OrderRepository();
-        $this->orderItemRepository = new OrderItemRepository();
-        $this->customerRepository = new CustomerRepository();
-
-        $this->cookie = new \common\CookieStorage();
+        $this->loginModel = new LoginModel();
+        $this->loginView = new LoginView($this->loginModel);
+        $this->persistentBasketDAL = new ProductBasketDAL();
+        $this->cookie = new CookieStorage();
     }
 
     public function viewAllProducts(){
 
         $message = $this->message;
+        $successMessage = $this->successMessage;
+        if($successMessage != ""){
+            $successMessageContainer = '<div class="checkoutMessage"><p class="alert alert-success" id="' . self::$messageId . '">' . $successMessage . '</p></div>';
+        }
+        else{
+            $successMessageContainer = "";
+        }
 
         $limit      = ( isset( $_GET['limit'] ) ) ? $_GET['limit'] : 4;
         $page       = ( isset( $_GET['page'] ) ) ? $_GET['page'] : 1;
@@ -66,13 +77,14 @@ class ProductView
         $paginationLinks = new \common\PaginationLinks();
 
 
-        $paginationResults = $this->productRepository->getProductsPagination($page, $limit);
-        $allProducts = $this->productRepository->getAllProducts();
+        $paginationResults = $this->productCatalog->getProductsPagination($page, $limit);
+        $allProducts = $this->productCatalog->getAllProducts();
 
         $totalRows = count($allProducts);
 
         $ret = '<div class="jumbotron">';
         $ret .= '<h1>Welcome</h1>';
+        $ret .= $successMessageContainer;
         $ret .= '<h3>All products</h3>';
         $ret .= '<p id="' . self::$messageId . '">' . $message . '</p>';
         $ret .= '<div class="pagination-links">'. $paginationLinks->createLinks($page, $limit, $totalRows, $links, 'pagination pagination-sm').'</div>';
@@ -101,13 +113,20 @@ class ProductView
 
         $message = $this->message;
 
+        if($message != ""){
+            $messageContainer = '<p class="alert alert-success" id="' . self::$messageId . '">' . $message . '</p>';
+        }
+        else{
+            $messageContainer = '<p" id="' . self::$messageId . '">' . $message . '</p>';
+        }
+
         $id = $_GET['product'];
-        $productToShow = $this->productRepository->getProductById($id);
+        $productToShow = $this->productCatalog->getProductById($id);
 
         $ret = '<div class="jumbotron">';
         $ret .= '<div class="col-md-6">';
         $ret .= '</div>';
-        $ret .= '<p id="' . self::$messageId . '">' . $message . '</p>';
+        $ret .= $messageContainer;
         $ret .= '<h1>'.$productToShow->getName().'</h1>';
         $ret .= '<p>'.$productToShow->getImage($productToShow->getId()).'</p>';
         $ret .= '<p>Price: $' . $productToShow->getPrice(). '</p>';
@@ -170,7 +189,7 @@ class ProductView
             $ret .= '<th>Quantity</th>';
             $ret .= '</tr>';
             foreach ($objectsToShow as $basketItem) {
-                $getObjectFromName = $this->productRepository->getProductByName($basketItem);
+                $getObjectFromName = $this->productCatalog->getProductByName($basketItem);
 
                 $array_count = array_count_values($allObjectsInCookie);
                 $totalPrice += $getObjectFromName->getPrice() * $array_count["$basketItem"];
@@ -239,7 +258,7 @@ class ProductView
                 $ret .= '<th>Quantity</th>';
                 $ret .= '</tr>';
                 foreach ($objectsToShow as $basketItem) {
-                    $getObjectFromName = $this->productRepository->getProductByName($basketItem);
+                    $getObjectFromName = $this->productCatalog->getProductByName($basketItem);
                     $array_count = array_count_values($allObjectsInCookie);
                     $totalPrice += $getObjectFromName->getPrice() * $array_count["$basketItem"];
                     $quantity = $array_count["$basketItem"];
@@ -306,11 +325,13 @@ class ProductView
 
     public function viewReceipt(){
 
-        //Get order by customer
         $id = $_GET['Customer'];
-        $customer = $this->customerRepository->getCustomerById($id);
-        $order = $this->orderRepository->getLatestOrderByCustomerId($customer->getId());
-        $orderItems = $this->orderItemRepository->getAllOrderItemsWithOrderId($order->getId());
+
+        //Get order by customer
+        $customer = $this->customerCatalog->getCustomerById($id);
+        $order = $this->orderCatalog->getLatestOrderByCustomerId($customer->getId());
+
+        $orderItems = $this->orderItemCatalog->getAllOrderItemsWithOrderId($order->getId());
 
         $products = array();
         $allBoughtItems = array();
@@ -318,7 +339,7 @@ class ProductView
         $totalPrice = 0;
 
         foreach($orderItems as $item){
-            $productName = $this->productRepository->getProductById($item->getProductId());
+            $productName = $this->productCatalog->getProductById($item->getProductId());
             if(!in_array($productName, $products)) {
                 array_push($products, $productName);
             }
@@ -361,6 +382,10 @@ class ProductView
         return $ret;
     }
 
+    /*public function redirectReceipt($id){
+        header("Location: /project-inlog/index.php?action=ViewReciept&customer=$id");
+    }*/
+
     public function getAllOrderItems(){
         //Load basket file
         $basket = $this->persistentBasketDAL->load();
@@ -376,7 +401,7 @@ class ProductView
 
         foreach($products as $item){
             if($item != "") {
-                $productName = $this->productRepository->getProductByName($item);
+                $productName = $this->productCatalog->getProductByName($item);
                 if(substr_count($basket,$item) > $productName->getQuantity()){
                     return false;
                 }
@@ -443,8 +468,7 @@ class ProductView
         foreach ($itemsInBasket as $productInBasket) {
 
             if ($productInBasket != "") {
-
-                array_push($getObjectFromName, $this->productRepository->getProductByName($productInBasket));
+                array_push($getObjectFromName, $this->productCatalog->getProductByName($productInBasket));
             }
         }
         return $getObjectFromName;
@@ -464,7 +488,7 @@ class ProductView
 
     public function getItemToRemoveFromBasket(){
         $id = $_GET['product'];
-        $productToAdd = $this->productRepository->getProductById($id);
+        $productToAdd = $this->productCatalog->getProductById($id);
         return $productToAdd;
     }
 
@@ -494,7 +518,7 @@ class ProductView
 
     public function rememberBasketForUser(){
         $id = $_GET['product'];
-        $productToSave = $this->productRepository->getProductById($id);
+        $productToSave = $this->productCatalog->getProductById($id);
 
         $this->expirationDate = time() + (86400 * 30);
 
@@ -517,9 +541,9 @@ class ProductView
         return $this->message = $message;
     }
 
-    public function getMessage(){
+    /*public function getMessage(){
         return $this->message;
-    }
+    }*/
 
     //Set message to show user
     public function setSuccessMessage($message){

@@ -15,10 +15,12 @@ class LoginView{
 	private static $keep = 'LoginView::KeepMeLoggedIn';
 	private static $messageId = 'LoginView::Message';
 	private static $flashLocation = 'LoginView::FlashMessage';
+	private static $flashSuccessLocation = 'LoginView::FlashSuccessMessage';
 
     private $expirationDate;
 	private $model;
 	private $message;
+	private $successMessage;
 
 	const SAVED_USERNAME = 'savedname';
 
@@ -46,7 +48,21 @@ class LoginView{
 			$this->message = $this->cookie->load(self::$flashLocation);
 			$this->cookie->delete(self::$flashLocation);
 		}
+		else if ($this->cookie->isCookieSet(self::$flashSuccessLocation)) {
+			$this->successMessage = $this->cookie->load(self::$flashSuccessLocation);
+			$this->cookie->delete(self::$flashSuccessLocation);
+		}
 	}
+	public function setFlashMessage($message) {
+		assert(is_string($message), "LoginView::setMessage needs a string as argument");
+		$this->cookie->save(self::$flashLocation, $message, time() + 3600);
+	}
+
+	public function setFlashSuccessMessage($message) {
+		assert(is_string($message), "LoginView::setMessage needs a string as argument");
+		$this->cookie->save(self::$flashSuccessLocation, $message, time() + 3600);
+	}
+
 
 	/**
 	 * @param $message
@@ -67,6 +83,24 @@ class LoginView{
 	 * @return string
 	 */
 	private function generateLoginFormHTML($message) {
+
+		$successMessage = $this->successMessage;
+
+
+		if($successMessage != ""){
+			$successMessageContainer = '<div class="checkoutMessage"><p class="alert alert-success" id="' . self::$messageId . '">' . $successMessage . '</p></div>';
+		}
+		else{
+			$successMessageContainer = "";
+		}
+
+		if($message != ""){
+			$messageContainer = '<div class="checkoutMessage "><p class="alert alert-danger" id="' . self::$messageId . '">' . $message . '</p></div>';
+		}
+		else{
+			$messageContainer = '<p" id="' . self::$messageId . '">' . $message . '</p>';
+		}
+
         return '
 			<div class="jumbotron">
 				<form method="post" >
@@ -74,7 +108,8 @@ class LoginView{
 						<legend>Login - enter Username and password</legend>
 
 						<div class="normal-font">
-							<p id="' . self::$messageId . '">' . $message . '</p>
+                        	'. $successMessageContainer .'
+							'. $messageContainer .'
 						</div>
 						<label for="' . self::$name . '">Username :</label>
 						<input type="text" id="' . self::$name . '" name="' . self::$name . '" value="' . $this->getUsernameToDisplay()  .'" />
@@ -222,22 +257,17 @@ class LoginView{
 	}
 	
 	public function reloadPage(){
-		header('Location: /Project-inlog/index.php' );
+		header('Location: /project-inlog/index.php' );
 	}
 
 	//TODO Is this correct??
-	public function reloadFailPage(){
-		header('Location: /Project-inlog/index.php?action=LoginUser' );
+	public function reloadLoginPage(){
+		header('Location: /project-inlog/index.php?action=LoginUser' );
 	}
 
     //Set message to show user
 	public function setMessage($message){
         assert(is_string($message));
 		return $this->message = $message;
-	}
-
-	public function setFlashMessage($message) {
-		assert(is_string($message), "LoginView::setMessage needs a string as argument");
-		$this->cookie->save(self::$flashLocation, $message, time() + 3600);
 	}
 }

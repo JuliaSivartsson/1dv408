@@ -4,7 +4,15 @@ namespace controller;
 
 
 use common\Messages;
+use common\SessionStorage;
+use model\dal\ProductBasketDAL;
+use model\LoginModel;
 use model\UserModel;
+use view\DefaultView;
+use view\LoginView;
+use view\NavigationView;
+use view\ProductView;
+use view\RegisterView;
 
 class LoginController{
 
@@ -13,7 +21,6 @@ class LoginController{
     private $hasLoggedIn = false;
     private $registrationView;
     private $navView;
-    private $productRepository;
     private $persistentBasketDAL;
     private $productView;
     private $defaultView;
@@ -21,16 +28,15 @@ class LoginController{
 
 
     public function __construct(){
-        $this->loginModel = new \model\LoginModel();
-        $this->sessionStorage = new \common\SessionStorage();
-        $this->productRepository = new \model\dal\ProductRepository();
-        $this->persistentBasketDAL = new \model\dal\ProductBasketDAL();
+        $this->loginModel = new LoginModel();
+        $this->sessionStorage = new SessionStorage();
+        $this->persistentBasketDAL = new ProductBasketDAL();
 
-        $this->navView = new \view\NavigationView();
-        $this->registrationView = new \view\Registerview();
-        $this->productView = new \view\ProductView($this->productRepository, $this->navView);
-        $this->loginView = new \view\LoginView($this->loginModel);
-        $this->defaultView = new \view\DefaultView();
+        $this->navView = new NavigationView();
+        $this->registrationView = new RegisterView();
+        $this->productView = new ProductView($this->navView);
+        $this->loginView = new LoginView($this->loginModel);
+        $this->defaultView = new DefaultView();
     }
 
     /**
@@ -62,10 +68,10 @@ class LoginController{
             $this->userModel = new UserModel($username, $password);
         }catch(\model\UsernameTooShortException $e){
             $this->loginView->setFlashMessage(Messages::$usernameIsNotCorrect);
-            $this->loginView->reloadFailPage();
+            $this->loginView->reloadLoginPage();
         }catch(\model\PasswordTooShort $e){
             $this->loginView->setFlashMessage(Messages::$passwordIsNotCorrect);
-            $this->loginView->reloadFailPage();
+            $this->loginView->reloadLoginPage();
         }
 
         $user = $this->userModel->getUserByUsername($username);
@@ -89,7 +95,7 @@ class LoginController{
         }
         else{
             $this->loginView->setFlashMessage(Messages::$wrongCredentials);
-            $this->loginView->reloadFailPage();
+            $this->loginView->reloadLoginPage();
         }
     }
 
