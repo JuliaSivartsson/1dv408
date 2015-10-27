@@ -16,7 +16,6 @@ class RegistrationController{
         $this->registerView = $registrationView;
         $this->layoutView = $layoutView;
         $this->cookieStorage = new CookieStorage();
-
     }
 
     public function doRegister(){

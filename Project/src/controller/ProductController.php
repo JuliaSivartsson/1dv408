@@ -10,10 +10,12 @@ namespace controller;
 
 
 use common\Messages;
+use model\CustomerCatalog;
 use model\CustomerModel;
 use model\dal\ProductBasketDAL;
 use model\OrderItemModel;
 use model\OrderModel;
+use model\ProductCatalog;
 use view\DefaultView;
 use view\NavigationView;
 use view\ProductView;
@@ -21,10 +23,10 @@ use view\ProductView;
 class ProductController
 {
     private $persistentBasketDAL;
-
     private $defaultView;
     private $navView;
     private $productView;
+    private $productCatalog;
 
     public function __construct(){
         $this->persistentBasketDAL = new ProductBasketDAL();
@@ -32,6 +34,7 @@ class ProductController
         $this->defaultView = new DefaultView();
         $this->navView = new NavigationView();
         $this->productView = new ProductView($this->navView);
+        $this->productCatalog = new ProductCatalog();
     }
 
     public function purchaseProducts(){
@@ -51,9 +54,11 @@ class ProductController
                 return Messages::$wrongEmail;
             }
 
+            $customerCatalog = new CustomerCatalog();
+
             if ($newCustomer == true) {
-                $newCustomer->saveNewCustomerInRepository($newCustomer);
-                $customer = $newCustomer->getCustomerBySsn($newCustomer->getSSN());
+                $customerCatalog->saveNewCustomerInRepository($newCustomer);
+                $customer = $customerCatalog->getCustomerBySsn($newCustomer->getSSN());
 
                 //create order on that customer
                 $order = new OrderModel($customer->getId());
@@ -68,11 +73,11 @@ class ProductController
                     $orderItemInModel = new OrderItemModel($getOrder->getId(), $orderItem->getId());
 
                     $orderItemInModel->saveNewOrderItemInRepository($orderItemInModel);
-                    $getOrderItem = $this->productRepository->getProductById($orderItemInModel->getProductId());
+                    $getOrderItem = $this->productCatalog->getProductById($orderItemInModel->getProductId());
 
                     //Reduce quantity on that product
                     $newQuantity = $getOrderItem->getQuantity() - 1;
-                    $this->productRepository->reduceQuantity($orderItem->getId(), $newQuantity);
+                    $this->productCatalog->reduceQuantity($orderItem->getId(), $newQuantity);
                 }
 
                 $this->productView->forgetBasket();
@@ -81,10 +86,9 @@ class ProductController
                 return $customer;
             }
 
-            // TODO send email!
+            // OBS! this code is not used at the moment, not implemented fully.
             //$customerEmail = $customer->getEmail();
             //$administratorEmail = \Settings::ADMIN_EMAIL;
-
             //$this->sendCustomerEmail($customer, $getOrder);
         }
         else{
@@ -107,16 +111,18 @@ class ProductController
         $getItemToRemove = $this->productView->getItemToRemoveFromBasket();
         $this->persistentBasketDAL->removeOneLineFromFile($getItemToRemove->getName());
         $this->productView->setMessage(Messages::$removedOneItem);
-        return $this->productView->viewBasket();
+        $this->productView->reloadBasketPage();
     }
 
+    /*
+     * Obs! unused code, it works, but is not implemented fully.
+     */
     private function sendCustomerEmail(CustomerModel $customer, OrderModel $order){
-
         $orderId = $order->getId();
 
         $to      = $customer->getEmail();
         $subject = 'Your order!';
-        $message = 'hello';
+        $message = 'Receipt';
         $headers = 'From: itzys webshop';
 
         if(mail($to, $subject, $message, $headers)){

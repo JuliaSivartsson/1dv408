@@ -73,7 +73,4 @@ class ProductModel{
         return $this->productRepository->getProductById($id);
     }
 
-    public function reduceQuantity($id, $newQuantity){
-        $this->productRepository->reduceQuantity($id, $newQuantity);
-    }
 }

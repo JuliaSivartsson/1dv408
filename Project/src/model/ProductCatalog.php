@@ -31,4 +31,8 @@ class ProductCatalog
         return $this->productRepository->getAllProducts();
     }
 
+    public function reduceQuantity($id, $newQuantity){
+        $this->productRepository->reduceQuantity($id, $newQuantity);
+    }
+
 }

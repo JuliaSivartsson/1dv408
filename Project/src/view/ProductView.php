@@ -355,7 +355,6 @@ class ProductView
         $ret .= '<p>'. $customer->getFirstName() .' '. $customer->getLastName() .'</p>';
         $ret .= '<p>'. $customer->getSSN() .'</p>';
         $ret .= '<p>'. $customer->getEmail() .'</p>';
-        $ret .= '<p> You should also have received a confirmation on your email about your order.</p>';
         $ret .= '</div>';
         $ret .= '<p>Payment method: Swish account 123-456 7890</p>';
         $ret .= '<table class="table table-striped table-hover">';
@@ -381,10 +380,6 @@ class ProductView
         $ret .= '</div>';
         return $ret;
     }
-
-    /*public function redirectReceipt($id){
-        header("Location: /project-inlog/index.php?action=ViewReciept&customer=$id");
-    }*/
 
     public function getAllOrderItems(){
         //Load basket file
@@ -529,6 +524,10 @@ class ProductView
         return $productToSave->getName();
     }
 
+    public function reloadBasketPage(){
+        header('Location: /project-inlog/index.php?action=ViewBasket' );
+    }
+
     //Delete cookie
     public function forgetBasket(){
         $this->cookie->delete(self::$cookieProduct);
@@ -540,10 +539,6 @@ class ProductView
         assert(is_string($message));
         return $this->message = $message;
     }
-
-    /*public function getMessage(){
-        return $this->message;
-    }*/
 
     //Set message to show user
     public function setSuccessMessage($message){
