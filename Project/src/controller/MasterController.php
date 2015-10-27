@@ -76,6 +76,7 @@ class MasterController
             }
         }
 
+
         //If user wants to buy products
         if ($this->productView->wantToPurchase()) {
             $purchase = $this->productController->purchaseProducts();

@@ -111,7 +111,7 @@ class ProductController
         $getItemToRemove = $this->productView->getItemToRemoveFromBasket();
         $this->persistentBasketDAL->removeOneLineFromFile($getItemToRemove->getName());
         $this->productView->setMessage(Messages::$removedOneItem);
-        $this->productView->reloadBasketPage();
+        return $this->productView->viewBasket();
     }
 
     /*

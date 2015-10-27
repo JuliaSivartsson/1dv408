@@ -10,6 +10,7 @@ namespace view;
 
 use common\CookieStorage;
 use model\dal\ProductBasketDAL;
+use model\dal\ProductRepository;
 use model\LoginModel;
 use model\ProductCatalog;
 use model\CustomerCatalog;
@@ -340,8 +341,9 @@ class ProductView
 
         foreach($orderItems as $item){
             $productName = $this->productCatalog->getProductById($item->getProductId());
-            if(!in_array($productName, $products)) {
-                array_push($products, $productName);
+
+            if(!in_array($productName->getName(), $products)) {
+                array_push($products, $productName->getName());
             }
             array_push($allBoughtItems, $productName->getName());
         }
@@ -364,14 +366,15 @@ class ProductView
         $ret .= '<th>Quantity</th>';
         $ret .= '</tr>';
         foreach ($products as $product) {
+            $productObject = $this->productCatalog->getProductByName($product);
             $array_count = array_count_values($allBoughtItems);
-            $name = $product->getName();
-            $totalPrice += $product->getPrice() * $array_count["$name"];
+            $name = $productObject->getName();
+            $totalPrice += $productObject->getPrice() * $array_count["$name"];
             $quantity = $array_count["$name"];
 
             $ret .= '<tr>';
-            $ret .= '<td>'. $product->getName() .'</td>';
-            $ret .= '<td>$'. $product->getPrice() .'</td>';
+            $ret .= '<td>'. $productObject->getName() .'</td>';
+            $ret .= '<td>$'. $productObject->getPrice() .'</td>';
             $ret .= '<td>'. $quantity .'</td>';
             $ret .= '</tr>';
         }
