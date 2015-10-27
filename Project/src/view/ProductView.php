@@ -527,10 +527,6 @@ class ProductView
         return $productToSave->getName();
     }
 
-    public function reloadBasketPage(){
-        header('Location: /project-inlog/index.php?action=ViewBasket' );
-    }
-
     //Delete cookie
     public function forgetBasket(){
         $this->cookie->delete(self::$cookieProduct);
