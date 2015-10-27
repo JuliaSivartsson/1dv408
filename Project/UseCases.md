@@ -63,6 +63,3 @@
 1. System presents an error message
 2. Step 2 in main scenario.
 
----------------
-
-####UC 8 User and Admin recieve payment information
